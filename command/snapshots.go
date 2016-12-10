@@ -5,6 +5,7 @@ import (
 	"github.com/codegangsta/cli"
 	"strings"
 	"github.com/kolov/sardine/common"
+	"time"
 )
 
 type Snapshot struct {
@@ -12,7 +13,7 @@ type Snapshot struct {
 	Name          string      `json:"name"`
 	Regions       []string      `json:"regions"`
 
-	CreatedAt     string      `json:"created_at"`
+	CreatedAt     time.Time      `json:"created_at"`
 	ResourceId    string      `json:"resource_id"`
 	ResourceType  string      `json:"resource_type"`
 
@@ -35,12 +36,13 @@ func CmdSnapshots(c *cli.Context) {
 	if len(record.Snapshots) != 0 {
 		for i, v := range record.Snapshots {
 			fmt.Println(i + 1, strings.Join(
-				[]string{" [", v.Name, "] created at [", v.CreatedAt, "], type=", v.ResourceType}, ""))
+				[]string{" [", v.Name, "] created at [",
+					v.CreatedAt.Format("2/1/2006 15:04"), "], type=",
+					v.ResourceType}, ""))
 		}
 	} else {
 		fmt.Println("No snapshots")
 	}
 
-	fmt.Println("Here's the rest ", record)
 
 }
