@@ -25,7 +25,7 @@ type SnapshotList struct {
 	Snapshots [] Snapshot   `json:"snapshots"`
 }
 
-func CmdSnapshots(c *cli.Context) {
+func CmdListSnapshots(c *cli.Context) {
 
 	url := fmt.Sprintf("https://api.digitalocean.com/v2/snapshots?page=1&per_page=100")
 

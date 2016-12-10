@@ -8,45 +8,60 @@ import (
 	"github.com/kolov/sardine/command"
 )
 
+var AuthToken string
+
 var GlobalFlags = []cli.Flag{
 	cli.StringFlag{
-		EnvVar: "ENV_TOKEN",
-		Name:   "token",
+		EnvVar: "DO_TOKEN_SARDINE",
+		Name:   "token, t",
 		Value:  "",
-		Usage:  "",
+		Usage:  "Authentication token. Must be provided here or as ",
+		Destination: &AuthToken,
 	},
 }
 
 var Commands = []cli.Command{
 	{
 		Name:   "sometest",
-		Usage:  "",
+		Usage:  "used during develpment for random tests. Ignore.",
 		Action: command.CmdSomeTest,
 		Flags:  []cli.Flag{},
 	},
 	{
 		Name:   "images",
-		Usage:  "",
+		Usage:  "Show all images",
 		Action: command.CmdImages,
 		Flags:  []cli.Flag{},
 	},
 	{
 		Name:   "snapshots",
-		Usage:  "",
-		Action: command.CmdSnapshots,
+		Usage:  "Show all snapshots",
+		Action: command.CmdListSnapshots,
 		Flags:  []cli.Flag{},
 	},
 	{
 		Name:   "droplets",
 		Usage:  "",
-		Action: command.CmdDroplets,
+		Action: command.CmdListDroplets,
 		Flags:  []cli.Flag{},
 	},
 	{
 		Name:   "list",
 		Usage:  "",
-		Action: command.CmdList,
+		//Action: command.CmdList,
 		Flags:  []cli.Flag{},
+		Subcommands: []cli.Command{
+			{
+				Name:  "snapshots",
+				Usage: "alist snapshots",
+				Action: command.CmdListSnapshots,
+			},
+			{
+				Name:  "droplets",
+				Usage: "list droplets",
+				Action: command.CmdListDroplets,
+			},
+		},
 	},
 	{
 		Name:   "shutdown",

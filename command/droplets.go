@@ -40,7 +40,7 @@ type DropletsList struct {
 	Droplets [] Droplet   `json:"droplets"`
 }
 
-func CmdDroplets(c *cli.Context) {
+func CmdListDroplets(c *cli.Context) {
 
 	url := fmt.Sprintf("https://api.digitalocean.com/v2/droplets?page=1&per_page=100")
 
@@ -57,6 +57,5 @@ func CmdDroplets(c *cli.Context) {
 		fmt.Println("No active droplets")
 	}
 
-	fmt.Println("Here's the rest ", record)
 
 }
