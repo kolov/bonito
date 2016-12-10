@@ -58,3 +58,7 @@ func CmdListDroplets(c *cli.Context) {
 	}
 
 }
+
+func startDroplet(imageId string) {
+	fmt.Println("Starting ", imageId)
+}

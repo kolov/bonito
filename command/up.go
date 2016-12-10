@@ -36,4 +36,10 @@ func CmdUp(c *cli.Context) {
 
 	fmt.Print("Found ", len(matches), " match(es)")
 
+	if len(matches) != 1 {
+		fmt.Println("--latest not supported yet. Please, specify the full name")
+	}
+
+	startDroplet(matches[0].Id)
+
 }
