@@ -3,8 +3,11 @@
 ## Description
 
 Sardine lives in the Digital Ocean. Some services are needed temporarily, e.g. during working hours, 
-and not in hte weekend or overnight. Sardine helps you to shutdown the servers whe you do not need them
-and start them up when needed again, paying noclod costs in the meanwhile. All this can be done on the digital Oceans' 
+and not in the weekend or overnight. Sardine helps you to shutdown the servers when you do not need them
+and spin them up when needed again, 
+paying no cloud costs in the meanwhile. 
+
+All this can be done on the digital Oceans' 
 Dashboard, 
 with a few clicks and some patience. Sardin automates this and besides, I wanted to do something in Go.
 ## Usage
