@@ -25,6 +25,18 @@ var Commands = []cli.Command{
 		Flags:  []cli.Flag{},
 	},
 	{
+		Name:   "images",
+		Usage:  "",
+		Action: command.CmdImages,
+		Flags:  []cli.Flag{},
+	},
+	{
+		Name:   "snapshots",
+		Usage:  "",
+		Action: command.CmdSnapshots,
+		Flags:  []cli.Flag{},
+	},
+	{
 		Name:   "droplets",
 		Usage:  "",
 		Action: command.CmdDroplets,

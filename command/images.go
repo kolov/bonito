@@ -7,10 +7,9 @@ import (
 	"github.com/kolov/sardine/common"
 )
 
-
-type Droplet struct {
-	Id            int      `json:"id"`
-	Name          string      `json:"name"`
+type Image struct {
+	Id           int      `json:"id"`
+	Name         string      `json:"name"`
 	Memory       int      `json:"memory"`
 	Vcpus        int      `json:"vcpus"`
 	Locked       bool      `json:"locked"`
@@ -29,27 +28,27 @@ type Droplet struct {
 			     Distribution   string      `json:"distribution"`
 			     Slug           string      `json:"slug"`
 			     Public         bool      `json:"public"`
-	Regions       []string      `json:"regions"`
+			     Regions        []string      `json:"regions"`
 			     Created_at     string      `json:"created_at"`
 			     Min_disk_size  int      `json:"min_disk_size"`
 			     Itype          string      `json:"type"`
 			     Size_gigabytes float32      `json:"size_gigabytes"`
 		     }  `json:"image"`
 }
-type DropletsList struct {
-	Droplets [] Droplet   `json:"droplets"`
+type ImageList struct {
+	Images [] Image   `json:"droplets"`
 }
 
-func CmdDroplets(c *cli.Context) {
+func CmdImages(c *cli.Context) {
 
-	url := fmt.Sprintf("https://api.digitalocean.com/v2/droplets?page=1&per_page=100")
+	url := fmt.Sprintf("https://api.digitalocean.com/v2/imagespage=1&per_page=100")
 
-	var record DropletsList
+	var record ImageList
 
 	common.Query(url, &record)
 
-	if len(record.Droplets) != 0 {
-		for i, v := range record.Droplets {
+	if len(record.Images) != 0 {
+		for i, v := range record.Images {
 			fmt.Println(i + 1, strings.Join(
 				[]string{" [", v.Name, "] created from image [", v.Image.Name, "]"}, ""))
 		}
