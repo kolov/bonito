@@ -37,14 +37,17 @@ func CmdListSnapshots(c *cli.Context) {
 	record := QuerySnapshots()
 
 	if len(record.Snapshots) != 0 {
-		for i, v := range record.Snapshots {
-			fmt.Println(i + 1, strings.Join(
-				[]string{" [", v.Name, "] created at [",
-					v.CreatedAt.Format("2/1/2006 15:04"), "], type=",
-					v.ResourceType}, ""))
-		}
+		PrintSnapshots(record.Snapshots)
 	} else {
 		fmt.Println("No snapshots")
 	}
 
+}
+func PrintSnapshots(snapshots []Snapshot) {
+	for i, v := range snapshots {
+		fmt.Println(i + 1, strings.Join(
+			[]string{" [", v.Name, "] created at [",
+				v.CreatedAt.Format("2/1/2006 15:04"), "], type=",
+				v.ResourceType}, ""))
+	}
 }
