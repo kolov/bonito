@@ -19,6 +19,12 @@ var GlobalFlags = []cli.Flag{
 
 var Commands = []cli.Command{
 	{
+		Name:   "sometest",
+		Usage:  "",
+		Action: command.CmdSomeTest,
+		Flags:  []cli.Flag{},
+	},
+	{
 		Name:   "list",
 		Usage:  "",
 		Action: command.CmdList,
