@@ -25,13 +25,16 @@ type SnapshotList struct {
 	Snapshots [] Snapshot   `json:"snapshots"`
 }
 
+func QuerySnapshots() SnapshotList {
+	url := fmt.Sprintf("https://api.digitalocean.com/v2/snapshots?page=1&per_page=100")
+	var record SnapshotList
+	common.Query(url, &record)
+	return record
+}
+
 func CmdListSnapshots(c *cli.Context) {
 
-	url := fmt.Sprintf("https://api.digitalocean.com/v2/snapshots?page=1&per_page=100")
-
-	var record SnapshotList
-
-	common.Query(url, &record)
+	record := QuerySnapshots()
 
 	if len(record.Snapshots) != 0 {
 		for i, v := range record.Snapshots {
@@ -43,6 +46,5 @@ func CmdListSnapshots(c *cli.Context) {
 	} else {
 		fmt.Println("No snapshots")
 	}
-
 
 }

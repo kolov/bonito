@@ -39,13 +39,18 @@ type ImageList struct {
 	Images [] Image   `json:"droplets"`
 }
 
-func CmdImages(c *cli.Context) {
-
+func QueryImages() ImageList {
 	url := fmt.Sprintf("https://api.digitalocean.com/v2/imagespage=1&per_page=100")
 
 	var record ImageList
 
 	common.Query(url, &record)
+	return record
+
+}
+func CmdImages(c *cli.Context) {
+
+	record := QueryImages()
 
 	if len(record.Images) != 0 {
 		for i, v := range record.Images {

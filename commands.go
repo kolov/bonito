@@ -9,6 +9,7 @@ import (
 )
 
 var AuthToken string
+var ListOrder string
 
 var GlobalFlags = []cli.Flag{
 	cli.StringFlag{
@@ -28,28 +29,13 @@ var Commands = []cli.Command{
 		Flags:  []cli.Flag{},
 	},
 	{
-		Name:   "images",
-		Usage:  "Show all images",
-		Action: command.CmdImages,
-		Flags:  []cli.Flag{},
-	},
-	{
-		Name:   "snapshots",
-		Usage:  "Show all snapshots",
-		Action: command.CmdListSnapshots,
-		Flags:  []cli.Flag{},
-	},
-	{
-		Name:   "droplets",
-		Usage:  "",
-		Action: command.CmdListDroplets,
-		Flags:  []cli.Flag{},
-	},
-	{
 		Name:   "list",
-		Usage:  "",
-		//Action: command.CmdList,
-		Flags:  []cli.Flag{},
+		Usage:  "list all snapshots or droplets",
+		Flags: []cli.Flag{
+			cli.StringFlag{Name: "order , o ",
+				Usage:  "order by n(ame) or d(ate) `FIELD`",
+				Destination: &ListOrder},
+		},
 		Subcommands: []cli.Command{
 			{
 				Name:  "snapshots",
@@ -70,10 +56,17 @@ var Commands = []cli.Command{
 		Flags:  []cli.Flag{},
 	},
 	{
-		Name:   "start",
-		Usage:  "",
-		Action: command.CmdStart,
-		Flags:  []cli.Flag{},
+		Name:   "up",
+		Usage:  "starts a droplet from a snapshot",
+		Action: command.CmdUp,
+		Flags: []cli.Flag{
+			cli.StringFlag{Name: "template , t ",
+				Usage:  "regex or fullname of the snapshot to use",
+				Destination: &command.SnapshotTemplate},
+			cli.BoolFlag{Name: "latest",
+				Usage:  "Use the latest snapshot by more matches. ",
+				Destination: &command.UseLatestSnapshot},
+		},
 	},
 }
 

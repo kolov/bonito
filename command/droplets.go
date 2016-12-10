@@ -7,10 +7,9 @@ import (
 	"github.com/kolov/sardine/common"
 )
 
-
 type Droplet struct {
-	Id            int      `json:"id"`
-	Name          string      `json:"name"`
+	Id           int      `json:"id"`
+	Name         string      `json:"name"`
 	Memory       int      `json:"memory"`
 	Vcpus        int      `json:"vcpus"`
 	Locked       bool      `json:"locked"`
@@ -29,13 +28,14 @@ type Droplet struct {
 			     Distribution   string      `json:"distribution"`
 			     Slug           string      `json:"slug"`
 			     Public         bool      `json:"public"`
-	Regions       []string      `json:"regions"`
+			     Regions        []string      `json:"regions"`
 			     Created_at     string      `json:"created_at"`
 			     Min_disk_size  int      `json:"min_disk_size"`
 			     Itype          string      `json:"type"`
 			     Size_gigabytes float32      `json:"size_gigabytes"`
 		     }  `json:"image"`
 }
+
 type DropletsList struct {
 	Droplets [] Droplet   `json:"droplets"`
 }
@@ -56,6 +56,5 @@ func CmdListDroplets(c *cli.Context) {
 	} else {
 		fmt.Println("No active droplets")
 	}
-
 
 }
