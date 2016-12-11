@@ -90,7 +90,7 @@ func startDropletFromSnapshot(snapshot Snapshot) {
 		keys = &split
 	}
 
-	name := Name;
+	name := DropletName;
 	if name == "" {
 		name = "bonito-" + time.Now().Format("2-1-2006-15-04")
 	}

@@ -38,8 +38,17 @@ type Droplet struct {
 		     } `json:"image"`
 }
 
+func (d Droplet)String() string {
+	barr, _ := json.Marshal(d)
+	return string(barr)
+}
+
 type DropletsList struct {
 	Droplets []Droplet `json:"droplets"`
+}
+
+type DropletCommand struct {
+	Type string `json:"type"`
 }
 
 type StartDroplet struct {
@@ -56,21 +65,33 @@ type StartDroplet struct {
 	Tags              *[]string `json:"tags"`
 }
 
-func String(sd StartDroplet) string {
+func (sd StartDroplet) String() string {
 	barr, _ := json.Marshal(sd)
 	return string(barr)
 }
 
-func CmdListDroplets(c *cli.Context) {
-
+func ListDroplets() ([]Droplet, error) {
 	url := fmt.Sprintf("https://api.digitalocean.com/v2/droplets?page=1&per_page=100")
 
 	var record DropletsList
 
-	common.Query(url, &record)
+	err := common.Query(url, &record)
+	if err == nil {
+		return record.Droplets, err
+	} else {
+		return nil, err
+	}
+}
+func CmdListDroplets(c *cli.Context) {
 
-	if len(record.Droplets) != 0 {
-		for i, v := range record.Droplets {
+	droplets, err := ListDroplets()
+	if err != nil {
+		fmt.Println("error", err)
+		return
+	}
+
+	if len(droplets) != 0 {
+		for i, v := range droplets {
 			fmt.Println(i + 1, strings.Join(
 				[]string{" [", v.Name, "] created from image [", v.Image.Name, "]"}, ""))
 		}
@@ -84,7 +105,7 @@ func startDroplet(body StartDroplet) {
 	url := fmt.Sprintf("https://api.digitalocean.com/v2/droplets")
 
 	if Verbose {
-		fmt.Println("Bonito will start the following droplet: ", String(body))
+		fmt.Println("Bonito will start the following droplet: ", body)
 	}
 	if !Force {
 		fmt.Println("Are you sure? Type yes to continue or no to stop")

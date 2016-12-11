@@ -72,3 +72,8 @@ func Query(url string, result interface{}) error {
 func Post(url string, body interface{}) (*http.Response, error) {
 	return sendRequest(url, "POST", body)
 }
+
+func PrintErrorAndExit(err error) error {
+	fmt.Println("Error:", err)
+	return err
+}
