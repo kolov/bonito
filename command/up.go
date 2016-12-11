@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"github.com/codegangsta/cli"
 	"regexp"
+	"strings"
+	"time"
 )
 
 var SnapshotTemplate string
@@ -43,7 +45,7 @@ func CmdUp(c *cli.Context) {
 			return
 		}
 
-		fmt.Println("Found ", len(matches), " match(es)")
+		fmt.Println("Found ", len(matches), " match(es):")
 		if Verbose {
 			PrintSnapshots(matches)
 		}
@@ -74,7 +76,39 @@ func CmdUp(c *cli.Context) {
 }
 
 func startDropletFromSnapshot(snapshot Snapshot) {
-	fmt.Println("Startingfroplet from snapshot ", snapshot)
+
 	region := snapshot.Regions[0]
-	startDroplet(snapshot.Id, region)
+	size := selectSize(snapshot.MinDISKSize)
+
+	var keys *[]string = nil
+	if Keys != "" {
+		split := strings.Split(Keys, ",")
+		keys = &split
+	}
+
+	name := Name;
+	if name == "" {
+		name = "sardine-" + time.Now().Format("2-1-2006-15-04")
+	}
+
+	body := StartDroplet{
+		name,
+		region,
+		size,
+		snapshot.Id,
+		keys,
+		false,
+		false,
+		nil,
+		false,
+		nil,
+		&[]string{"sardine"}}
+
+	startDroplet(body)
+}
+/**
+Select image to meet min size reqquirements. Now it just returns 2gb
+ */
+func selectSize(minDiskSize int) string {
+	return "2gb"
 }

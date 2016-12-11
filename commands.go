@@ -7,8 +7,6 @@ import (
 	"github.com/kolov/sardine/command"
 )
 
-
-
 var GlobalFlags = []cli.Flag{
 	cli.StringFlag{
 		EnvVar: "DO_TOKEN_SARDINE",
@@ -69,9 +67,26 @@ var Commands = []cli.Command{
 				Usage:  "Use the latest snapshot by more matches. ",
 				Destination: &command.UseLatestSnapshot},
 			cli.BoolFlag{
-				Name:   "verbose",
+				Name:   "verbose, v",
 				Usage:  "Verbose output",
 				Destination: &command.Verbose,
+			},
+			cli.StringFlag{
+				Name:   "keys",
+				Value: "",
+				Usage:  "SSH key name(s) to initialize the droplet with",
+				Destination: &command.Keys,
+			},
+			cli.StringFlag{
+				Name:   "name",
+				Value: "",
+				Usage:  "Droplet name",
+				Destination: &command.Name,
+			},
+			cli.BoolFlag{
+				Name:   "force, f",
+				Usage:  "Don't ask confirmation",
+				Destination: &command.Force,
 			},
 		},
 	},
