@@ -25,7 +25,9 @@ func CmdUp(c *cli.Context) {
 	record := QuerySnapshots()
 
 	if SnapshotTemplate != "" {
-		fmt.Println("Starting up from snapshot matching ", SnapshotTemplate)
+		if Verbose {
+			fmt.Println("Loking up snapshots matching template [", SnapshotTemplate, "]")
+		}
 
 		var reName = regexp.MustCompile(SnapshotTemplate)
 
@@ -36,13 +38,15 @@ func CmdUp(c *cli.Context) {
 			}
 		}
 		if len(matches) == 0 {
-			fmt.Print("No snapshots found matching [", SnapshotTemplate, "]")
-			fmt.Print("Available snapshots:")
+			fmt.Println("No snapshots found matching [", SnapshotTemplate, "]", "Available snapshots:")
 			PrintSnapshots(record.Snapshots)
 			return
 		}
 
 		fmt.Println("Found ", len(matches), " match(es)")
+		if Verbose {
+			PrintSnapshots(matches)
+		}
 
 		if len(matches) != 1 {
 			fmt.Println("--latest not supported yet. Please, specify the full name")
@@ -70,6 +74,7 @@ func CmdUp(c *cli.Context) {
 }
 
 func startDropletFromSnapshot(snapshot Snapshot) {
+	fmt.Println("Startingfroplet from snapshot ", snapshot)
 	region := snapshot.Regions[0]
 	startDroplet(snapshot.Id, region)
 }

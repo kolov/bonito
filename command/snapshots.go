@@ -44,12 +44,16 @@ func CmdListSnapshots(c *cli.Context) {
 	}
 
 }
+
 func PrintSnapshots(snapshots []Snapshot) {
 	for i, v := range snapshots {
-		fmt.Println(i + 1, strings.Join(
-			[]string{" [", v.Name, "] created at [",
-				v.CreatedAt.Format("2/1/2006 15:04"),
-				"], regions=[", strings.Join(v.Regions, ","),
-				"], mindisk=[", strconv.Itoa(v.MinDISKSize), "]"}, ""))
+		fmt.Println(i + 1, toString(v))
 	}
+}
+func toString(v Snapshot) string {
+	return strings.Join(
+		[]string{" [", v.Name, "] created at [",
+			v.CreatedAt.Format("2/1/2006 15:04"),
+			"], regions=[", strings.Join(v.Regions, ","),
+			"], mindisk=[", strconv.Itoa(v.MinDISKSize), "]"}, "")
 }

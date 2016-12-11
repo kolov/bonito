@@ -3,13 +3,11 @@ package main
 import (
 	"fmt"
 	"os"
-
 	"github.com/codegangsta/cli"
 	"github.com/kolov/sardine/command"
 )
 
-var AuthToken string
-var ListOrder string
+
 
 var GlobalFlags = []cli.Flag{
 	cli.StringFlag{
@@ -17,8 +15,9 @@ var GlobalFlags = []cli.Flag{
 		Name:   "token, t",
 		Value:  "",
 		Usage:  "Authentication token. Must be provided here or as ",
-		Destination: &AuthToken,
+		Destination: &command.AuthToken,
 	},
+
 }
 
 var Commands = []cli.Command{
@@ -34,7 +33,7 @@ var Commands = []cli.Command{
 		Flags: []cli.Flag{
 			cli.StringFlag{Name: "order , o ",
 				Usage:  "order by n(ame) or d(ate) `FIELD`",
-				Destination: &ListOrder},
+				Destination: &command.ListOrder},
 		},
 		Subcommands: []cli.Command{
 			{
@@ -69,6 +68,11 @@ var Commands = []cli.Command{
 			cli.BoolFlag{Name: "latest",
 				Usage:  "Use the latest snapshot by more matches. ",
 				Destination: &command.UseLatestSnapshot},
+			cli.BoolFlag{
+				Name:   "verbose",
+				Usage:  "Verbose output",
+				Destination: &command.Verbose,
+			},
 		},
 	},
 }
