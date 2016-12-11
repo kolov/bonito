@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/codegangsta/cli"
 	"strings"
-	"github.com/kolov/sardine/common"
+	"github.com/kolov/bonito/common"
 )
 
 type Image struct {

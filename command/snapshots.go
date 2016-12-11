@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/codegangsta/cli"
 	"strings"
-	"github.com/kolov/sardine/common"
+	"github.com/kolov/bonito/common"
 	"time"
 	"strconv"
 )
@@ -26,17 +26,21 @@ type SnapshotList struct {
 	Snapshots [] Snapshot   `json:"snapshots"`
 }
 
-func QuerySnapshots() SnapshotList {
+func QuerySnapshots() (SnapshotList, error) {
 	url := fmt.Sprintf("https://api.digitalocean.com/v2/snapshots?page=1&per_page=100")
 	var record SnapshotList
-	common.Query(url, &record)
-	return record
+	err := common.Query(url, &record)
+	return record, err
 }
 
 func CmdListSnapshots(c *cli.Context) {
 
-	record := QuerySnapshots()
+	record, err := QuerySnapshots()
 
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 	if len(record.Snapshots) != 0 {
 		PrintSnapshots(record.Snapshots)
 	} else {

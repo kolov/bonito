@@ -3,7 +3,7 @@ package command
 import (
 	"fmt"
 	"github.com/codegangsta/cli"
-	"github.com/kolov/sardine/common"
+	"github.com/kolov/bonito/common"
 	"io/ioutil"
 	"strings"
 	"encoding/json"
@@ -84,10 +84,10 @@ func startDroplet(body StartDroplet) {
 	url := fmt.Sprintf("https://api.digitalocean.com/v2/droplets")
 
 	if Verbose {
-		fmt.Println("Starting droplet from ", String(body))
+		fmt.Println("Bonito will start the following droplet: ", String(body))
 	}
 	if !Force {
-		fmt.Println("Are you sure? Type yes to continue")
+		fmt.Println("Are you sure? Type yes to continue or no to stop")
 		if !common.Confirm() {
 			return
 		}

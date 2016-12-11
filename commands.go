@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"os"
 	"github.com/codegangsta/cli"
-	"github.com/kolov/sardine/command"
+	"github.com/kolov/bonito/command"
 )
 
 var GlobalFlags = []cli.Flag{
 	cli.StringFlag{
-		EnvVar: "DO_TOKEN_SARDINE",
+		EnvVar: "DO_TOKEN_BONITO",
 		Name:   "token, t",
 		Value:  "",
 		Usage:  "Authentication token. Must be provided here or as ",
@@ -19,12 +19,6 @@ var GlobalFlags = []cli.Flag{
 }
 
 var Commands = []cli.Command{
-	{
-		Name:   "sometest",
-		Usage:  "used during develpment for random tests. Ignore.",
-		Action: command.CmdSomeTest,
-		Flags:  []cli.Flag{},
-	},
 	{
 		Name:   "list",
 		Usage:  "list all snapshots or droplets",

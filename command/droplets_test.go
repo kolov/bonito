@@ -11,7 +11,7 @@ func TestCmdDroplets(t *testing.T) {
 }
 
 func ExampleReverse() {
-	b, _ := json.Marshal(StartDroplet{"sardine",
+	b, _ := json.Marshal(StartDroplet{"bonito",
 		"ams1",
 		"2gb",
 		"iid",
@@ -21,9 +21,9 @@ func ExampleReverse() {
 		nil,
 		false,
 		nil,
-		&[]string{"sardine"},
+		&[]string{"bonito"},
 	})
 	fmt.Println(string(b))
-	// Output: {"name":"sardine","region":"ams1","size":"2gb","image":"iid","ssh_keys":null,"backups":false,"ipv6":false,"user_data":null,"private_networking":false,"volumes":null,"tags":["sardine"]}
+	// Output: {"name":"bonito","region":"ams1","size":"2gb","image":"iid","ssh_keys":null,"backups":false,"ipv6":false,"user_data":null,"private_networking":false,"volumes":null,"tags":["bonito"]}
 
 }

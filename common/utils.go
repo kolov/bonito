@@ -10,8 +10,6 @@ import (
 	"os"
 )
 
-
-
 func sendRequest(url string, method string, body interface{}) (*http.Response, error) {
 
 	var req *http.Request
@@ -36,14 +34,14 @@ func sendRequest(url string, method string, body interface{}) (*http.Response, e
 		return nil, err
 	}
 
-	token := os.Getenv("DO_TOKEN_SARDINE")
+	token := os.Getenv("DO_TOKEN_BONITO")
 	if token == "" {
-		fmt.Println("Please, put your Digital Ocean Authorizarion token in an env var named DO_TOKEN_SARDINE " +
+		fmt.Println("Please, put your Digital Ocean Authorizarion token in an env var named DO_TOKEN_BONITO " +
 			"and try again.")
 		fmt.Println("See https://cloud.digitalocean.com/settings/api/tokens for more information")
-		return nil, errors.New("no token")
+		return nil, errors.New("Fatal: no auth token")
 	}
-	req.Header.Add("Authorization", "Bearer "+token)
+	req.Header.Add("Authorization", "Bearer " + token)
 	req.Header.Add("Content-Type", "application/json")
 
 	client := &http.Client{}
@@ -59,19 +57,16 @@ func sendRequest(url string, method string, body interface{}) (*http.Response, e
 	return resp, err
 }
 
-func Query(url string, result interface{}) {
+func Query(url string, result interface{}) error {
 
 	resp, err := sendRequest(url, "GET", nil)
 	if err != nil {
-		return
+		return err
 	}
 
 	defer resp.Body.Close()
 
-	if err := json.NewDecoder(resp.Body).Decode(result); err != nil {
-		log.Println(err)
-		return
-	}
+	return json.NewDecoder(resp.Body).Decode(result)
 }
 
 func Post(url string, body interface{}) (*http.Response, error) {

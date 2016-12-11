@@ -24,7 +24,11 @@ func CmdUp(c *cli.Context) {
 		return
 	}
 
-	record := QuerySnapshots()
+	record, err := QuerySnapshots()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 
 	if SnapshotTemplate != "" {
 		if Verbose {
@@ -88,7 +92,7 @@ func startDropletFromSnapshot(snapshot Snapshot) {
 
 	name := Name;
 	if name == "" {
-		name = "sardine-" + time.Now().Format("2-1-2006-15-04")
+		name = "bonito-" + time.Now().Format("2-1-2006-15-04")
 	}
 
 	body := StartDroplet{
@@ -102,7 +106,7 @@ func startDropletFromSnapshot(snapshot Snapshot) {
 		nil,
 		false,
 		nil,
-		&[]string{"sardine"}}
+		&[]string{"bonito"}}
 
 	startDroplet(body)
 }
