@@ -38,6 +38,11 @@ var Commands = []cli.Command{
 				Usage: "list droplets",
 				Action: command.CmdListDroplets,
 			},
+			{
+				Name:  "keys",
+				Usage: "list keys",
+				Action: command.CmdListKeys,
+			},
 		},
 	},
 	{

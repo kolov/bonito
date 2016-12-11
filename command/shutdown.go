@@ -27,7 +27,7 @@ func CmdShutdown(c *cli.Context) {
 		return
 	}
 
-	var dropletTOShutdown Droplet
+	var matchingDroplet Droplet
 
 	if SnapshotTemplate != "" {
 		fmt.Println("Looking for droplets started from image matching [", SnapshotTemplate, "]")
@@ -45,7 +45,7 @@ func CmdShutdown(c *cli.Context) {
 			fmt.Println("Expected 1 droplet matching image [", SnapshotTemplate, "], found", strconv.Itoa(len(matches)))
 			return
 		}
-		dropletTOShutdown = matches[0]
+		matchingDroplet = matches[0]
 	}
 	if DropletName != "" {
 		fmt.Printf("Looking for droplets named [%s]\n", DropletName)
@@ -62,12 +62,12 @@ func CmdShutdown(c *cli.Context) {
 				DropletName, len(matches))
 			return
 		}
-		dropletTOShutdown = matches[0]
+		matchingDroplet = matches[0]
 	}
 	if Verbose {
-		fmt.Println("Will shutdown ", dropletTOShutdown)
+		fmt.Println("Will shutdown ", matchingDroplet)
 	}
-	shutdown(dropletTOShutdown)
+	shutdown(matchingDroplet)
 
 }
 

@@ -122,9 +122,10 @@ func startDroplet(body StartDroplet) {
 	}
 
 	htmlData, err := ioutil.ReadAll(resp.Body)
-	if resp.Status != "200" {
-		fmt.Println("Error", string(htmlData))
+	if !strings.HasPrefix(resp.Status, "2") {
+		fmt.Println("Error", resp.Status)
 	} else {
 		fmt.Println("Success")
 	}
+	fmt.Println("Response", string(htmlData))
 }
