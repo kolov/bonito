@@ -64,7 +64,7 @@ var Commands = []cli.Command{
 				Usage:  "regex or fullname of the snapshot to use. More matches allowd, see --latest",
 				Destination: &command.SnapshotTemplate},
 			cli.StringFlag{Name: "snapshotid , sid ",
-				Usage:  "id of the snapshot to use. One match expected",
+				Usage:  "id of the snapshot to use. Exact match expected",
 				Destination: &command.SnapshotId},
 			cli.BoolFlag{Name: "latest",
 				Usage:  "Use the latest snapshot by more matches. ",

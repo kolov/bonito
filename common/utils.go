@@ -1,18 +1,37 @@
 package common
 
 import (
-	"log"
-	"os"
-	"fmt"
-	"net/http"
+	"bytes"
 	"encoding/json"
+	"errors"
+	"fmt"
+	"log"
+	"net/http"
+	"os"
 )
 
-func Query(url string, result interface{}) {
-	req, err := http.NewRequest("GET", url, nil)
+func sendRequest(url string, method string, body interface{}) (*http.Response, error) {
+
+	var req *http.Request
+	var err error
+
+	if body != nil {
+		barr, err := json.Marshal(body)
+		if err != nil {
+			fmt.Println("error marshalling", err)
+			return nil, errors.New("marshalling")
+		} else {
+			req, err = http.NewRequest(method, url, bytes.NewBuffer(barr))
+			fmt.Println("Marshalled body:", string(barr))
+		}
+
+	} else {
+		req, err = http.NewRequest(method, url, nil)
+	}
+
 	if err != nil {
 		log.Fatal("NewRequest: ", err)
-		return
+		return nil, err
 	}
 
 	token := os.Getenv("DO_TOKEN_SARDINE")
@@ -20,9 +39,9 @@ func Query(url string, result interface{}) {
 		fmt.Println("Please, put your Digital Ocean Authorizarion token in an env var named DO_TOKEN_SARDINE " +
 			"and try again.")
 		fmt.Println("See https://cloud.digitalocean.com/settings/api/tokens for more information")
-		return
+		return nil, errors.New("no token")
 	}
-	req.Header.Add("Authorization", "Bearer " + token)
+	req.Header.Add("Authorization", "Bearer "+token)
 	req.Header.Add("Content-Type", "application/json")
 
 	client := &http.Client{}
@@ -30,9 +49,22 @@ func Query(url string, result interface{}) {
 	// Send the request via a client
 	// Do sends an HTTP request and
 	// returns an HTTP response
+	fmt.Println("About to send request", req)
 	resp, err := client.Do(req)
+	fmt.Println("Got response: ", resp)
+	fmt.Println(err)
 	if err != nil {
 		log.Fatal("Error sending req: ", err)
+		return resp, err
+	}
+
+	return resp, err
+}
+
+func Query(url string, result interface{}) {
+
+	resp, err := sendRequest(url, "GET", nil)
+	if err != nil {
 		return
 	}
 
@@ -44,3 +76,12 @@ func Query(url string, result interface{}) {
 	}
 }
 
+func Post(url string, body interface{}) string {
+
+	resp, err := sendRequest(url, "POST", body)
+	if err != nil {
+		return "error"
+	}
+
+	return resp.Status
+}
