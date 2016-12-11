@@ -64,7 +64,7 @@ func CmdUp(c *cli.Context) {
 			PrintSnapshots(record.Snapshots)
 			return
 		}
-		startDropletFromSnapshot(SnapshotId)
+		startDropletFromSnapshot(matches[0])
 	}
 
 }

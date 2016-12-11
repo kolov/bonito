@@ -6,6 +6,7 @@ import (
 	"strings"
 	"github.com/kolov/sardine/common"
 	"time"
+	"strconv"
 )
 
 type Snapshot struct {
@@ -47,7 +48,8 @@ func PrintSnapshots(snapshots []Snapshot) {
 	for i, v := range snapshots {
 		fmt.Println(i + 1, strings.Join(
 			[]string{" [", v.Name, "] created at [",
-				v.CreatedAt.Format("2/1/2006 15:04"), "], type=",
-				v.ResourceType}, ""))
+				v.CreatedAt.Format("2/1/2006 15:04"),
+				"], regions=[", strings.Join(v.Regions, ","),
+				"], mindisk=[", strconv.Itoa(v.MinDISKSize), "]"}, ""))
 	}
 }
