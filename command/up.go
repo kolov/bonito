@@ -1,8 +1,8 @@
 package command
 
 import (
-	"github.com/codegangsta/cli"
 	"fmt"
+	"github.com/codegangsta/cli"
 	"regexp"
 )
 
@@ -22,10 +22,10 @@ func CmdUp(c *cli.Context) {
 		return
 	}
 
+	record := QuerySnapshots()
+
 	if SnapshotTemplate != "" {
 		fmt.Println("Starting up from snapshot matching ", SnapshotTemplate)
-
-		record := QuerySnapshots()
 
 		var reName = regexp.MustCompile(SnapshotTemplate)
 
@@ -48,11 +48,28 @@ func CmdUp(c *cli.Context) {
 			fmt.Println("--latest not supported yet. Please, specify the full name")
 		}
 
-		startDroplet(matches[0].Id)
+		startDropletFromSnapshot(matches[0])
 	}
 
-	if( SnapshotId != "") {
-		startDroplet(SnapshotId)
+	if SnapshotId != "" {
+		matches := []Snapshot{}
+		for _, snapshot := range record.Snapshots {
+			if SnapshotId == snapshot.Id {
+				matches = append(matches, snapshot)
+			}
+		}
+		if len(matches) != 1 {
+			fmt.Print("Expected 1 snapsot with Id ", SnapshotId, ", found " + string(len(matches)))
+			fmt.Print("Available snapshots:")
+			PrintSnapshots(record.Snapshots)
+			return
+		}
+		startDropletFromSnapshot(SnapshotId)
 	}
 
+}
+
+func startDropletFromSnapshot(snapshot Snapshot) {
+	region := snapshot.Regions[0]
+	startDroplet(snapshot.Id, region)
 }

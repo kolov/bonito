@@ -22,7 +22,7 @@ func sendRequest(url string, method string, body interface{}) (*http.Response, e
 			return nil, errors.New("marshalling")
 		} else {
 			req, err = http.NewRequest(method, url, bytes.NewBuffer(barr))
-			fmt.Println("Marshalled body:", string(barr))
+			//fmt.Println("Marshalled body:", string(barr))
 		}
 
 	} else {
@@ -46,13 +46,9 @@ func sendRequest(url string, method string, body interface{}) (*http.Response, e
 
 	client := &http.Client{}
 
-	// Send the request via a client
-	// Do sends an HTTP request and
-	// returns an HTTP response
-	fmt.Println("About to send request", req)
+	//fmt.Println("About to send request", req)
 	resp, err := client.Do(req)
-	fmt.Println("Got response: ", resp)
-	fmt.Println(err)
+	//fmt.Println("Got response: ", resp)
 	if err != nil {
 		log.Fatal("Error sending req: ", err)
 		return resp, err
@@ -76,12 +72,6 @@ func Query(url string, result interface{}) {
 	}
 }
 
-func Post(url string, body interface{}) string {
-
-	resp, err := sendRequest(url, "POST", body)
-	if err != nil {
-		return "error"
-	}
-
-	return resp.Status
+func Post(url string, body interface{}) (*http.Response, error) {
+	return sendRequest(url, "POST", body)
 }

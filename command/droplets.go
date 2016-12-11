@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/codegangsta/cli"
 	"github.com/kolov/sardine/common"
+	"io/ioutil"
 	"strings"
 )
 
@@ -73,12 +74,12 @@ func CmdListDroplets(c *cli.Context) {
 
 }
 
-func startDroplet(imageId string) {
+func startDroplet(imageId, region string) {
 	url := fmt.Sprintf("https://api.digitalocean.com/v2/droplets")
 
 	body := StartDroplet{
 		"sardine",
-		"ams1",
+		region,
 		"2gb",
 		imageId,
 		nil, // keys
@@ -89,7 +90,17 @@ func startDroplet(imageId string) {
 		nil,
 		&[]string{"sardine"},
 	}
-	status := common.Post(url, body)
+	resp, err := common.Post(url, body)
 
-	fmt.Println(status)
+	if err != nil {
+		fmt.Println("Error", err)
+		return
+	}
+
+	htmlData, err := ioutil.ReadAll(resp.Body)
+	if resp.Status != "200" {
+		fmt.Println("Error", string(htmlData))
+	} else {
+		fmt.Println("Success")
+	}
 }
