@@ -56,7 +56,7 @@ type StartDroplet struct {
 	Region            string    `json:"region"`
 	Size              string    `json:"size"`
 	Image             string    `json:"image"`
-	SshKeys           *[]string `json:"ssh_keys"`
+	SshKeys           *[]int `json:"ssh_keys"`
 	Backups           bool      `json:"backups"`
 	Ipv6              bool      `json:"ipv6"`
 	UserData          *string   `json:"user_data"`

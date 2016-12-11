@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"github.com/codegangsta/cli"
 	"regexp"
-	"strings"
 	"time"
+	"github.com/kolov/bonito/common"
 )
 
 var SnapshotTemplate string
@@ -84,10 +84,19 @@ func startDropletFromSnapshot(snapshot Snapshot) {
 	region := snapshot.Regions[0]
 	size := selectSize(snapshot.MinDISKSize)
 
-	var keys *[]string = nil
+	var keyIds []int = nil
 	if Keys != "" {
-		split := strings.Split(Keys, ",")
-		keys = &split
+		//split := strings.Split(Keys, ",")
+		keys, err := ListKeys()
+		if err != nil {
+			common.PrintErrorAndExit(err)
+			return
+		}
+		for _, key := range keys {
+			if Keys == key.Name {
+				keyIds = append(keyIds, key.Id)
+			}
+		}
 	}
 
 	name := DropletName;
@@ -100,7 +109,7 @@ func startDropletFromSnapshot(snapshot Snapshot) {
 		region,
 		size,
 		snapshot.Id,
-		keys,
+		&keyIds,
 		false,
 		false,
 		nil,
