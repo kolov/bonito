@@ -22,7 +22,7 @@ var GlobalFlags = []cli.Flag{
 var Commands = []cli.Command{
 	{
 		Name:   "list",
-		Usage:  "list all snapshots or droplets",
+		Usage:  "lists all snapshots, droplets or keys",
 		Flags: []cli.Flag{
 			cli.StringFlag{Name: "order , o ",
 				Usage:  "order by n(ame) or d(ate) `FIELD`",
@@ -48,7 +48,7 @@ var Commands = []cli.Command{
 	},
 	{
 		Name:   "shutdown",
-		Usage:  "",
+		Usage:  "Stops, archives and deletes a droplet",
 		Action: command.CmdShutdown,
 		Flags:  []cli.Flag{
 			cli.StringFlag{Name: "template , t ",

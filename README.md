@@ -3,12 +3,17 @@
 ## Description
 
 Bonito lives in the Digital Ocean. Some services may be needed temporarily, e.g. during working hours, 
-and not in the weekend or overnight. Bonito helps you to shutdown the servers when you do not need them
-and spin them up when needed again, paying no cloud costs in the meanwhile. 
+and not in the weekend or overnight. 
+Bonito helps you to shutdown the servers, archive the data and release them,
+paying no cloud costs until you need them again. 
 
 All this can be done on the digital Oceans' 
 Dashboard, 
-with a few clicks and some patience. Bonito automates this. Besides, I wanted to do something in Go.
+with a few clicks and a lot of patience - wait up to 10 minutes for a snapshot to be taken,
+then delete the droplet. 
+Bonito automates this. 
+Besides, I 
+wanted to do something in Go.
 
 ## Usage
 
@@ -16,17 +21,19 @@ DON'T USE, this is in development.
 
 Start with `bonito --help`
 
-    COMMANDS:
-        sometest  used during develpment for random tests. Ignore.
-        list      list all snapshots or droplets
-        shutdown
-        up        starts a droplet from a snapshot
-        help, h   Shows a list of commands or help for one command
-   
-    GLOBAL OPTIONS:
-      --token value, -t value  Authentication token. Must be provided here or as [$DO_TOKEN_BONITO]
-      --help, -h               show help
-      --version, -v            print the version
+    USAGE:
+        bonito [global options] command [command options] [arguments...]
+
+		COMMANDS:
+				 list      lists all snapshots, droplets or keys
+				 shutdown  Stops, archives and deletes a droplet
+				 up        starts a droplet from a snapshot
+				 help, h   Shows a list of commands or help for one command
+		
+		GLOBAL OPTIONS:
+			 --token value, -t value  Authentication token. Must be provided here or as [$DO_TOKEN_BONITO]
+			 --help, -h               show help
+			 --version, -v            print the version
       
 First, you need a Digital Ocean authorization token. See 
 [https://cloud.digitalocean.com/settings/api/tokens](https://cloud.digitalocean.com/settings/api/tokens) dor details.
@@ -39,7 +46,7 @@ To start a server from an existing snapshot:
     
 To shut it down:
 
-    bonito down --template={regex}
+    bonito shutdown --template {regex} OR --name {name} [--verbose] --nosnapshot
       
 ## Install
 

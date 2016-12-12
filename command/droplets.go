@@ -155,13 +155,13 @@ func startDroplet(body StartDroplet) {
 }
 
 func waitUntilStarted(id int) {
-	ticker := time.NewTicker(5 * time.Second)
+	ticker := time.NewTicker(11 * time.Second)
 	quit := make(chan struct{})
 
 	for {
 		select {
 		case <-ticker.C:
-			fmt.Printf("Checking status of droplet %d", id)
+			fmt.Printf("Waiting for droplet %d to become [active]\n", id)
 			droplet, err := queryDroplet(id)
 			if ( err != nil) {
 				fmt.Println(err)
@@ -169,8 +169,8 @@ func waitUntilStarted(id int) {
 				fmt.Printf("Droplet [id=%d, name= %s] has status [%s]\n",
 					droplet.Id, droplet.Name, droplet.Status)
 				if droplet.Status == "active" {
-					fmt.Println("Droplet started successfulyl")
-					ticker.Stop()
+					fmt.Println("Droplet started successfully")
+					close(quit)
 				}
 			}
 
