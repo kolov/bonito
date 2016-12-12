@@ -4,9 +4,8 @@ import (
 	"fmt"
 	"github.com/codegangsta/cli"
 	"github.com/kolov/bonito/common"
-	"io/ioutil"
-	"strings"
 	"encoding/json"
+	"time"
 )
 
 type Droplet struct {
@@ -53,6 +52,10 @@ type DropletsResponse struct {
 type DropletCommand struct {
 	Type string `json:"type"`
 }
+type NamedDropletCommand struct {
+	Type string `json:"type"`
+	Name string `json:"name"`
+}
 
 type StartDroplet struct {
 	Name              string    `json:"name"`
@@ -66,6 +69,12 @@ type StartDroplet struct {
 	PrivateNetworking bool      `json:"private_networking"`
 	Volumes           *[]string `json:"volumes"`
 	Tags              *[]string `json:"tags"`
+}
+
+type ActionResponse struct {
+	Id     int    `json:"id"`
+	Status string `json:"status"`
+	Type   string `json:"type"`
 }
 
 func (sd StartDroplet) String() string {
@@ -93,6 +102,7 @@ func QueryDroplets() ([]Droplet, error) {
 		return nil, err
 	}
 }
+
 func CmdListDroplets(c *cli.Context) {
 
 	droplets, err := QueryDroplets()
@@ -104,10 +114,12 @@ func CmdListDroplets(c *cli.Context) {
 	printDroplets(droplets)
 
 }
+
 func printDroplets(droplets []Droplet) {
 	if len(droplets) != 0 {
 		for i, v := range droplets {
-			fmt.Printf("%d. [%s] created from image [%s] id=%d\n", i + 1, v.Name, v.Image.Name, v.Id)
+			fmt.Printf("%d. [%s] created from image [%s] statuse=[%s] id=%d\n",
+				i + 1, v.Name, v.Image.Name, v.Status, v.Id)
 		}
 	} else {
 		fmt.Println("No active droplets")
@@ -127,18 +139,44 @@ func startDroplet(body StartDroplet) {
 		}
 		fmt.Println("Proceeding... ")
 	}
-	resp, err := common.Post(url, body)
+
+	var dropletResponse DropletsResponse
+
+	err := common.PostAndParse(url, body, &dropletResponse)
 
 	if err != nil {
 		fmt.Println("Error", err)
 		return
 	}
 
-	htmlData, err := ioutil.ReadAll(resp.Body)
-	if !strings.HasPrefix(resp.Status, "2") {
-		fmt.Println("Error", resp.Status)
-	} else {
-		fmt.Println("Success")
+	fmt.Println("Success")
+
+	waitUntilStarted(dropletResponse.Droplet.Id)
+}
+
+func waitUntilStarted(id int) {
+	ticker := time.NewTicker(5 * time.Second)
+	quit := make(chan struct{})
+
+	for {
+		select {
+		case <-ticker.C:
+			fmt.Printf("Checking status of droplet %d", id)
+			droplet, err := queryDroplet(id)
+			if ( err != nil) {
+				fmt.Println(err)
+			} else {
+				fmt.Printf("Droplet [id=%d, name= %s] has status [%s]\n",
+					droplet.Id, droplet.Name, droplet.Status)
+				if droplet.Status == "active" {
+					fmt.Println("Droplet started successfulyl")
+					ticker.Stop()
+				}
+			}
+
+		case <-quit:
+			ticker.Stop()
+			return
+		}
 	}
-	fmt.Println("Response", string(htmlData))
 }

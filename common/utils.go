@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"strings"
+	"time"
 )
 
 func sendRequest(url string, method string, body interface{}) (*http.Response, error) {
@@ -86,7 +87,27 @@ func Post(url string, body interface{}) (*http.Response, error) {
 	return sendRequest(url, "POST", body)
 }
 
+func PostAndParse(url string, body interface{}, result interface{}) error {
+
+	resp, err := Post(url, body)
+	if err != nil {
+		return err
+	}
+
+	defer resp.Body.Close()
+
+	if ( !strings.HasPrefix(resp.Status, "2")) {
+		return errors.New(resp.Status)
+	}
+
+	return json.NewDecoder(resp.Body).Decode(result)
+}
+
 func PrintError(err error) error {
 	fmt.Println("Error:", err)
 	return err
+}
+
+func Timeid() string {
+	return time.Now().Format("2-1-2006-15-04")
 }

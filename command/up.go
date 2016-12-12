@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/codegangsta/cli"
 	"regexp"
-	"time"
 	"github.com/kolov/bonito/common"
 )
 
@@ -56,6 +55,7 @@ func CmdUp(c *cli.Context) {
 
 		if len(matches) != 1 {
 			fmt.Println("--latest not supported yet. Please, specify the full name")
+			return
 		}
 
 		startDropletFromSnapshot(matches[0])
@@ -101,7 +101,7 @@ func startDropletFromSnapshot(snapshot Snapshot) {
 
 	name := common.DropletName;
 	if name == "" {
-		name = "bonito-" + time.Now().Format("2-1-2006-15-04")
+		name = "bonito-" + common.Timeid()
 	}
 
 	body := StartDroplet{
