@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
+	"strings"
 )
 
 func sendRequest(url string, method string, body interface{}) (*http.Response, error) {
@@ -22,7 +22,6 @@ func sendRequest(url string, method string, body interface{}) (*http.Response, e
 			return nil, errors.New("marshalling")
 		} else {
 			req, err = http.NewRequest(method, url, bytes.NewBuffer(barr))
-			//fmt.Println("Marshalled body:", string(barr))
 		}
 
 	} else {
@@ -34,12 +33,10 @@ func sendRequest(url string, method string, body interface{}) (*http.Response, e
 		return nil, err
 	}
 
-	token := os.Getenv("DO_TOKEN_BONITO")
-	if token == "" {
-		fmt.Println("Please, put your Digital Ocean Authorizarion token in an env var named DO_TOKEN_BONITO " +
-			"and try again.")
-		fmt.Println("See https://cloud.digitalocean.com/settings/api/tokens for more information")
-		return nil, errors.New("Fatal: no auth token")
+	token, err := getToken();
+	if err != nil {
+		log.Fatal("Token: ", err)
+		return nil, err
 	}
 	req.Header.Add("Authorization", "Bearer " + token)
 	req.Header.Add("Content-Type", "application/json")
@@ -57,6 +54,18 @@ func sendRequest(url string, method string, body interface{}) (*http.Response, e
 	return resp, err
 }
 
+func getToken() (string, error) {
+	//token := os.Getenv("DO_TOKEN_BONITO")
+	token := AuthToken
+	if token == "" {
+		fmt.Println("Please, put your Digital Ocean Authorizarion token in an env var named DO_TOKEN_BONITO " +
+			"and try again.")
+		fmt.Println("See https://cloud.digitalocean.com/settings/api/tokens for more information")
+		return "", errors.New("Fatal: no auth token")
+	}
+	return token, nil
+}
+
 func Query(url string, result interface{}) error {
 
 	resp, err := sendRequest(url, "GET", nil)
@@ -65,6 +74,10 @@ func Query(url string, result interface{}) error {
 	}
 
 	defer resp.Body.Close()
+
+	if ( !strings.HasPrefix(resp.Status, "2")) {
+		return errors.New(resp.Status)
+	}
 
 	return json.NewDecoder(resp.Body).Decode(result)
 }

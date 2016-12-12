@@ -5,6 +5,7 @@ import (
 	"os"
 	"github.com/codegangsta/cli"
 	"github.com/kolov/bonito/command"
+	"github.com/kolov/bonito/common"
 )
 
 var GlobalFlags = []cli.Flag{
@@ -13,7 +14,7 @@ var GlobalFlags = []cli.Flag{
 		Name:   "token, t",
 		Value:  "",
 		Usage:  "Authentication token. Must be provided here or as ",
-		Destination: &command.AuthToken,
+		Destination: &common.AuthToken,
 	},
 
 }
@@ -25,7 +26,7 @@ var Commands = []cli.Command{
 		Flags: []cli.Flag{
 			cli.StringFlag{Name: "order , o ",
 				Usage:  "order by n(ame) or d(ate) `FIELD`",
-				Destination: &command.ListOrder},
+				Destination: &common.ListOrder},
 		},
 		Subcommands: []cli.Command{
 			{
@@ -60,18 +61,18 @@ var Commands = []cli.Command{
 			cli.BoolFlag{
 				Name:   "verbose, v",
 				Usage:  "Verbose output",
-				Destination: &command.Verbose,
+				Destination: &common.Verbose,
 			},
 			cli.StringFlag{
 				Name:   "name",
 				Value: "",
 				Usage:  "Droplet name",
-				Destination: &command.DropletName,
+				Destination: &common.DropletName,
 			},
 			cli.BoolFlag{
 				Name:   "force, f",
 				Usage:  "Don't ask confirmation",
-				Destination: &command.Force,
+				Destination: &common.Force,
 			},
 		},
 	},
@@ -92,24 +93,24 @@ var Commands = []cli.Command{
 			cli.BoolFlag{
 				Name:   "verbose, v",
 				Usage:  "Verbose output",
-				Destination: &command.Verbose,
+				Destination: &common.Verbose,
 			},
 			cli.StringFlag{
 				Name:   "keys",
 				Value: "",
 				Usage:  "SSH key name(s) to initialize the droplet with",
-				Destination: &command.Keys,
+				Destination: &common.Keys,
 			},
 			cli.StringFlag{
 				Name:   "name",
 				Value: "",
 				Usage:  "Droplet name",
-				Destination: &command.DropletName,
+				Destination: &common.DropletName,
 			},
 			cli.BoolFlag{
 				Name:   "force, f",
 				Usage:  "Don't ask confirmation",
-				Destination: &command.Force,
+				Destination: &common.Force,
 			},
 		},
 	},

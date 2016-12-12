@@ -31,7 +31,7 @@ func CmdUp(c *cli.Context) {
 	}
 
 	if SnapshotTemplate != "" {
-		if Verbose {
+		if common.Verbose {
 			fmt.Println("Loking up snapshots matching template [", SnapshotTemplate, "]")
 		}
 
@@ -50,7 +50,7 @@ func CmdUp(c *cli.Context) {
 		}
 
 		fmt.Println("Found ", len(matches), " match(es):")
-		if Verbose {
+		if common.Verbose {
 			PrintSnapshots(matches)
 		}
 
@@ -85,7 +85,7 @@ func startDropletFromSnapshot(snapshot Snapshot) {
 	size := selectSize(snapshot.MinDISKSize)
 
 	var keyIds []int = nil
-	if Keys != "" {
+	if common.Keys != "" {
 		//split := strings.Split(Keys, ",")
 		keys, err := ListKeys()
 		if err != nil {
@@ -93,13 +93,13 @@ func startDropletFromSnapshot(snapshot Snapshot) {
 			return
 		}
 		for _, key := range keys {
-			if Keys == key.Name {
+			if common.Keys == key.Name {
 				keyIds = append(keyIds, key.Id)
 			}
 		}
 	}
 
-	name := DropletName;
+	name := common.DropletName;
 	if name == "" {
 		name = "bonito-" + time.Now().Format("2-1-2006-15-04")
 	}

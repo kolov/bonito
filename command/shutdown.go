@@ -12,12 +12,12 @@ import (
 func CmdShutdown(c *cli.Context) {
 	fmt.Println("Shutting down called.")
 
-	if SnapshotTemplate == "" && DropletName == "" {
+	if SnapshotTemplate == "" && common.DropletName == "" {
 		fmt.Println("Either --template or --name must be provided")
 		return
 	}
 
-	if SnapshotTemplate != "" && DropletName != "" {
+	if SnapshotTemplate != "" && common.DropletName != "" {
 		fmt.Println("One of --template or --name must be provided")
 		return
 	}
@@ -47,24 +47,24 @@ func CmdShutdown(c *cli.Context) {
 		}
 		matchingDroplet = matches[0]
 	}
-	if DropletName != "" {
-		fmt.Printf("Looking for droplets named [%s]\n", DropletName)
+	if common.DropletName != "" {
+		fmt.Printf("Looking for droplets named [%s]\n", common.DropletName)
 
 		matches := []Droplet{}
 		for _, droplet := range droplets {
-			if DropletName == droplet.Name {
+			if common.DropletName == droplet.Name {
 				matches = append(matches, droplet)
 			}
 		}
 
 		if len(matches) != 1 {
 			fmt.Printf("Expected 1 droplet matching name [%s], found %d\n",
-				DropletName, len(matches))
+				common.DropletName, len(matches))
 			return
 		}
 		matchingDroplet = matches[0]
 	}
-	if Verbose {
+	if common.Verbose {
 		fmt.Println("Will shutdown ", matchingDroplet)
 	}
 	shutdown(matchingDroplet)

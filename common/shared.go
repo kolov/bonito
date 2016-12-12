@@ -1,4 +1,4 @@
-package command
+package common
 
 // Flags
 var AuthToken string

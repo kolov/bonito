@@ -104,10 +104,10 @@ func CmdListDroplets(c *cli.Context) {
 func startDroplet(body StartDroplet) {
 	url := fmt.Sprintf("https://api.digitalocean.com/v2/droplets")
 
-	if Verbose {
+	if common.Verbose {
 		fmt.Println("Bonito will start the following droplet: ", body)
 	}
-	if !Force {
+	if !common.Force {
 		fmt.Println("Are you sure? Type yes to continue or no to stop")
 		if !common.Confirm() {
 			return
