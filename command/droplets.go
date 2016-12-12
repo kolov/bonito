@@ -77,9 +77,7 @@ func queryDroplet(id int) (Droplet, error) {
 	url := fmt.Sprintf("https://api.digitalocean.com/v2/droplets/%d", id)
 
 	var record DropletsResponse
-
 	err := common.Query(url, &record)
-
 	return record.Droplet, err
 
 }
