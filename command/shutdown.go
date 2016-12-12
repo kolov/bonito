@@ -7,6 +7,7 @@ import (
 	"github.com/kolov/bonito/common"
 	"strconv"
 	"io/ioutil"
+	"time"
 )
 
 func CmdShutdown(c *cli.Context) {
@@ -21,9 +22,9 @@ func CmdShutdown(c *cli.Context) {
 		fmt.Println("One of --template or --name must be provided")
 		return
 	}
-	droplets, err := ListDroplets()
+	droplets, err := QueryDroplets()
 	if err != nil {
-		common.PrintErrorAndExit(err)
+		common.PrintError(err)
 		return
 	}
 
@@ -60,6 +61,7 @@ func CmdShutdown(c *cli.Context) {
 		if len(matches) != 1 {
 			fmt.Printf("Expected 1 droplet matching name [%s], found %d\n",
 				common.DropletName, len(matches))
+			printDroplets(droplets)
 			return
 		}
 		matchingDroplet = matches[0]
@@ -72,18 +74,44 @@ func CmdShutdown(c *cli.Context) {
 }
 
 func shutdown(droplet Droplet) {
+
 	url := fmt.Sprintf("https://api.digitalocean.com/v2/droplets/%d/actions", droplet.Id);
 
 	fmt.Println("Will use url", url)
 	resp, err := common.Post(url, DropletCommand{"shutdown"})
 	if err != nil {
-		common.PrintErrorAndExit(err)
+		common.PrintError(err)
 		return
 	}
 	if resp.Status == "201 Created" {
-		fmt.Println("Shuddown in progress: ")
+		fmt.Println("Shuddown in progress. WWaiting for droplet to shutdown...")
+		checkShutdown(droplet.Id)
+
 	}
 	barr, err := ioutil.ReadAll(resp.Body)
 	fmt.Println(string(barr))
+
+}
+
+func checkShutdown(id int) {
+	ticker := time.NewTicker(1 * time.Second)
+	quit := make(chan struct{})
+
+	for {
+		select {
+		case <-ticker.C:
+			fmt.Println("tick!")
+			droplet, err := queryDroplet(id)
+			if ( err != nil) {
+				fmt.Println(err)
+			} else {
+				fmt.Printf("[%s] created from image [%s] id=%d\n", droplet.Name, droplet.Image.Name, droplet.Id)
+			}
+		//			common.Query()
+		case <-quit:
+			ticker.Stop()
+			return
+		}
+	}
 
 }

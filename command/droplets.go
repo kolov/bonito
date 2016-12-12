@@ -46,6 +46,9 @@ func (d Droplet)String() string {
 type DropletsList struct {
 	Droplets []Droplet `json:"droplets"`
 }
+type DropletsResponse struct {
+	Droplet Droplet `json:"droplet"`
+}
 
 type DropletCommand struct {
 	Type string `json:"type"`
@@ -70,7 +73,17 @@ func (sd StartDroplet) String() string {
 	return string(barr)
 }
 
-func ListDroplets() ([]Droplet, error) {
+func queryDroplet(id int) (Droplet, error) {
+	url := fmt.Sprintf("https://api.digitalocean.com/v2/droplets/%d", id)
+
+	var record DropletsResponse
+
+	err := common.Query(url, &record)
+
+	return record.Droplet, err
+
+}
+func QueryDroplets() ([]Droplet, error) {
 	url := fmt.Sprintf("https://api.digitalocean.com/v2/droplets?page=1&per_page=100")
 
 	var record DropletsList
@@ -84,21 +97,23 @@ func ListDroplets() ([]Droplet, error) {
 }
 func CmdListDroplets(c *cli.Context) {
 
-	droplets, err := ListDroplets()
+	droplets, err := QueryDroplets()
 	if err != nil {
 		fmt.Println("error", err)
 		return
 	}
 
+	printDroplets(droplets)
+
+}
+func printDroplets(droplets []Droplet) {
 	if len(droplets) != 0 {
 		for i, v := range droplets {
-			fmt.Println(i + 1, strings.Join(
-				[]string{" [", v.Name, "] created from image [", v.Image.Name, "]"}, ""))
+			fmt.Printf("%d. [%s] created from image [%s] id=%d\n", i + 1, v.Name, v.Image.Name, v.Id)
 		}
 	} else {
 		fmt.Println("No active droplets")
 	}
-
 }
 
 func startDroplet(body StartDroplet) {

@@ -86,7 +86,7 @@ func Post(url string, body interface{}) (*http.Response, error) {
 	return sendRequest(url, "POST", body)
 }
 
-func PrintErrorAndExit(err error) error {
+func PrintError(err error) error {
 	fmt.Println("Error:", err)
 	return err
 }

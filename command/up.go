@@ -89,7 +89,7 @@ func startDropletFromSnapshot(snapshot Snapshot) {
 		//split := strings.Split(Keys, ",")
 		keys, err := ListKeys()
 		if err != nil {
-			common.PrintErrorAndExit(err)
+			common.PrintError(err)
 			return
 		}
 		for _, key := range keys {
