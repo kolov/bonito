@@ -97,6 +97,7 @@ func shutdown(droplet Droplet) {
 }
 
 func waitShutdown(id int) {
+	start := time.Now().Unix()
 	ticker := time.NewTicker(5 * time.Second)
 	quit := make(chan struct{})
 
@@ -108,8 +109,8 @@ func waitShutdown(id int) {
 			if ( err != nil) {
 				fmt.Println(err)
 			} else {
-				fmt.Printf("Droplet [id=%d name=%s] status [%s] \n",
-					droplet.Id, droplet.Name, droplet.Status)
+				fmt.Printf("Droplet [id=%d name=%s] status [%s]. Waiting for %d sec \n",
+					droplet.Id, droplet.Name, droplet.Status, time.Now().Unix() - start)
 				if droplet.Status == "off" {
 					close(quit)
 				}
@@ -124,6 +125,7 @@ func waitShutdown(id int) {
 }
 
 func waitSnapshot(actionId int) {
+	start := time.Now().Unix()
 	ticker := time.NewTicker(20 * time.Second)
 	quit := make(chan struct{})
 
@@ -137,7 +139,7 @@ func waitSnapshot(actionId int) {
 				if aresp.Action.CompletedAt != "" {
 					close(quit)
 				}
-				fmt.Sprint("Action %s not completed yet. Waiting...", actionId)
+				fmt.Sprint("Action %s not completed yet. Waiting %d sec...", actionId, time.Now().Unix() - start)
 			}
 		case <-quit:
 			ticker.Stop()
