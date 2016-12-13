@@ -37,7 +37,7 @@ Start with `bonito --help`
       
 First, you need a Digital Ocean authorization token. See 
 [https://cloud.digitalocean.com/settings/api/tokens](https://cloud.digitalocean.com/settings/api/tokens) dor details.
-Put the token in environment variable DO_TOKEN_BONITO (`export DO_TOKEN_BONIto=A7f9...`) or provide in the command line
+Put the token in environment variable DO_TOKEN_BONITO (`export DO_TOKEN_BONITO=A7f9...`) or provide in the command line
 with the option --token (`bonito --token A7f9... ...`).
 
 To start a server from an existing snapshot:

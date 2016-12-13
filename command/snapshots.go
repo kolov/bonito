@@ -26,16 +26,16 @@ type SnapshotList struct {
 	Snapshots [] Snapshot   `json:"snapshots"`
 }
 
-func QuerySnapshots() (SnapshotList, error) {
+func querySnapshots() (SnapshotList, error) {
 	url := fmt.Sprintf("https://api.digitalocean.com/v2/snapshots?page=1&per_page=100")
 	var record SnapshotList
 	err := common.Query(url, &record)
 	return record, err
 }
 
-func CmdListSnapshots(c *cli.Context) {
+func CmdListSnapshots(_ *cli.Context) {
 
-	record, err := QuerySnapshots()
+	record, err := querySnapshots()
 
 	if err != nil {
 		fmt.Println(err)

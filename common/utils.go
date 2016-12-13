@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"strings"
 	"time"
+	"io/ioutil"
 )
 
 func sendRequest(url string, method string, body interface{}) (*http.Response, error) {
@@ -97,10 +98,16 @@ func PostAndParse(url string, body interface{}, result interface{}) error {
 	defer resp.Body.Close()
 
 	if ( !strings.HasPrefix(resp.Status, "2")) {
-		return errors.New(resp.Status)
+		b, _ := ioutil.ReadAll(resp.Body)
+		fmt.Println(string(b))
+		return errors.New(fmt.Sprintf("%s: %s", resp.Status, b))
 	}
 
-	return json.NewDecoder(resp.Body).Decode(result)
+	fmt.Println("ABout to decode resp.Body into ", result)
+	err = json.NewDecoder(resp.Body).Decode(result)
+	fmt.Println("Decoded resp.Body into ", result)
+	return err
+
 }
 
 func PrintError(err error) error {
@@ -110,4 +117,8 @@ func PrintError(err error) error {
 
 func Timeid() string {
 	return time.Now().Format("2-1-2006-15-04")
+}
+
+func ResponseOK(response *http.Response) bool {
+	return strings.HasPrefix(response.Status, "2")
 }

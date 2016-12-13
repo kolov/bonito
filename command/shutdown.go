@@ -6,12 +6,8 @@ import (
 	"regexp"
 	"github.com/kolov/bonito/common"
 	"strconv"
-	"io/ioutil"
 	"time"
-	"net/http"
-	"encoding/json"
 )
-
 
 func CmdShutdown(c *cli.Context) {
 	fmt.Println("Shutting down called.")
@@ -25,7 +21,7 @@ func CmdShutdown(c *cli.Context) {
 		fmt.Println("One of --template or --name must be provided")
 		return
 	}
-	droplets, err := QueryDroplets()
+	droplets, err := queryDroplets()
 	if err != nil {
 		common.PrintError(err)
 		return
@@ -77,74 +73,73 @@ func CmdShutdown(c *cli.Context) {
 
 }
 
-func shutdownDroplet(dropletId int) (*http.Response, error) {
-	url := fmt.Sprintf("https://api.digitalocean.com/v2/droplets/%d/actions", dropletId);
-	return common.Post(url, DropletCommand{"shutdown"})
-}
-
-func snapshotDroplet(dropletId int, name string) (*http.Response, error) {
-	url := fmt.Sprintf("https://api.digitalocean.com/v2/droplets/%d/actions", dropletId);
-	return common.Post(url, NamedDropletCommand{"snapshot", name})
-}
-
 func shutdown(droplet Droplet) {
 
 	resp, err := shutdownDroplet(droplet.Id)
 
-	if err != nil {
+	if err != nil || !common.ResponseOK(resp) {
 		common.PrintError(err)
 		return
 	}
-	if resp.Status == "201 Created" {
-		fmt.Println("Shutdown in progress. WWaiting for droplet to shutdown...")
-		var snapshotBase = droplet.Image.Name
-		waitShutdownAndSnapshot(droplet.Id, snapshotBase + "1")
-
+	fmt.Println("Shutdown in progress. WWaiting for droplet to shutdown...")
+	waitShutdown(droplet.Id)
+	fmt.Println("Droplet shut down successfully. Starting snapshot")
+	var snapshotBase = droplet.Image.Name
+	actionResp, err1 := snapshotDroplet(droplet.Id, snapshotBase + "1")
+	if err1 != nil  {
+		common.PrintError(err1)
+		return
 	}
-	barr, err := ioutil.ReadAll(resp.Body)
-	fmt.Println(string(barr))
+	fmt.Println(actionResp)
+	waitSnapshot(droplet.Id, snapshotBase + "1")
+	fmt.Println("Snapshot taken successfully. Starting delete")
+	destroyDroplet(droplet.Id)
 
 }
 
-func waitShutdownAndSnapshot(id int, snapshotname string) {
+func waitShutdown(id int) {
 	ticker := time.NewTicker(5 * time.Second)
 	quit := make(chan struct{})
 
-	var phase = "shutdown"
 	for {
 		select {
 		case <-ticker.C:
 
-			if phase == "shutdown" {
-				droplet, err := queryDroplet(id)
-				if ( err != nil) {
-					fmt.Println(err)
-				} else {
-					fmt.Printf("Droplet [id=%d name=%s] status [%s] \n",
-						droplet.Id, droplet.Name, droplet.Status)
-					if droplet.Status == "off" {
-						phase = "asksnapshot"
-						fmt.Println("Droplet shut down successfully. Starting snapshot")
-					}
+			droplet, err := queryDroplet(id)
+			if ( err != nil) {
+				fmt.Println(err)
+			} else {
+				fmt.Printf("Droplet [id=%d name=%s] status [%s] \n",
+					droplet.Id, droplet.Name, droplet.Status)
+				if droplet.Status == "off" {
+					close(quit)
 				}
-			} else if phase == "asksnapshot" {
-				fmt.Printf("requesting snapshot")
-				resp, err := snapshotDroplet(id, snapshotname)
-				if err == nil {
-					var response ActionResponse
-					err := json.NewDecoder(resp.Body).Decode(response)
-					if err != nil {
-						phase = "waitsnapshot"
-						fmt.Print("Snapshotrequested. Response: " ,response)
-					} else {
-						common.PrintError(err)
-					}
-				} else {
-					common.PrintError(err)
-				}
-			} else if phase == "waitsnapshot" {
-				fmt.Println("Waitingsnapshot tofinish")
 			}
+
+		case <-quit:
+			ticker.Stop()
+			return
+		}
+	}
+
+}
+
+func waitSnapshot(id int, snapshotname string) {
+	ticker := time.NewTicker(20 * time.Second)
+	quit := make(chan struct{})
+
+	for {
+		select {
+		case <-ticker.C:
+
+			snapshots, err := querySnapshots()
+
+			if err == nil {
+				common.PrintError(err)
+			} else {
+				fmt.Println("Waiting...", snapshots)
+			}
+
 
 		case <-quit:
 			ticker.Stop()

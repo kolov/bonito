@@ -6,6 +6,7 @@ import (
 	"github.com/kolov/bonito/common"
 	"encoding/json"
 	"time"
+	"net/http"
 )
 
 type Droplet struct {
@@ -72,9 +73,22 @@ type StartDroplet struct {
 }
 
 type ActionResponse struct {
-	Id     int    `json:"id"`
-	Status string `json:"status"`
-	Type   string `json:"type"`
+	Action struct {
+		       Id           int    `json:"id"`
+		       Status       string    `json:"status"`
+		       Type         string    `json:"type"`
+		       StartedAt    string    `json:"started_at"`
+		       CompletedAt  string `json:"completed_at"`
+		       ResourceId   int      `json:"resource_id"`
+		       ResourceType string      `json:"resource_type"`
+		       Region       string   `json:"region"`
+		       RegionSlug   string   `json:"region_slug"`
+	       }  `json:"action"`
+}
+
+func (ar ActionResponse)String() string {
+	barr, _ := json.Marshal(ar)
+	return string(barr)
 }
 
 func (sd StartDroplet) String() string {
@@ -82,6 +96,14 @@ func (sd StartDroplet) String() string {
 	return string(barr)
 }
 
+func queryAction(actionId int) (ActionResponse, error) {
+	url := fmt.Sprintf("https://api.digitalocean.com/v2/actions/%d", actionId)
+
+	var record ActionResponse
+	err := common.Query(url, &record)
+	return record, err
+
+}
 func queryDroplet(id int) (Droplet, error) {
 	url := fmt.Sprintf("https://api.digitalocean.com/v2/droplets/%d", id)
 
@@ -90,7 +112,7 @@ func queryDroplet(id int) (Droplet, error) {
 	return record.Droplet, err
 
 }
-func QueryDroplets() ([]Droplet, error) {
+func queryDroplets() ([]Droplet, error) {
 	url := fmt.Sprintf("https://api.digitalocean.com/v2/droplets?page=1&per_page=100")
 
 	var record DropletsList
@@ -103,16 +125,14 @@ func QueryDroplets() ([]Droplet, error) {
 	}
 }
 
-func CmdListDroplets(c *cli.Context) {
+func CmdListDroplets(_ *cli.Context) {
 
-	droplets, err := QueryDroplets()
+	droplets, err := queryDroplets()
 	if err != nil {
 		fmt.Println("error", err)
 		return
 	}
-
 	printDroplets(droplets)
-
 }
 
 func printDroplets(droplets []Droplet) {
@@ -124,34 +144,6 @@ func printDroplets(droplets []Droplet) {
 	} else {
 		fmt.Println("No active droplets")
 	}
-}
-
-func startDroplet(body StartDroplet) {
-	url := fmt.Sprintf("https://api.digitalocean.com/v2/droplets")
-
-	if common.Verbose {
-		fmt.Println("Bonito will start the following droplet: ", body)
-	}
-	if !common.Force {
-		fmt.Println("Are you sure? Type yes to continue or no to stop")
-		if !common.Confirm() {
-			return
-		}
-		fmt.Println("Proceeding... ")
-	}
-
-	var dropletResponse DropletsResponse
-
-	err := common.PostAndParse(url, body, &dropletResponse)
-
-	if err != nil {
-		fmt.Println("Error", err)
-		return
-	}
-
-	fmt.Println("Success")
-
-	waitUntilStarted(dropletResponse.Droplet.Id)
 }
 
 func waitUntilStarted(id int) {
@@ -180,3 +172,29 @@ func waitUntilStarted(id int) {
 		}
 	}
 }
+
+func startDroplet(body StartDroplet) (DropletsResponse, error) {
+	url := fmt.Sprintf("https://api.digitalocean.com/v2/droplets")
+	var dropletResponse DropletsResponse
+	err := common.PostAndParse(url, body, &dropletResponse)
+	return dropletResponse, err
+
+}
+func shutdownDroplet(dropletId int) (*http.Response, error) {
+	url := fmt.Sprintf("https://api.digitalocean.com/v2/droplets/%d/actions", dropletId);
+	return common.Post(url, DropletCommand{"shutdown"})
+}
+
+func snapshotDroplet(dropletId int, name string) (ActionResponse, error) {
+	url := fmt.Sprintf("https://api.digitalocean.com/v2/droplets/%d/actions", dropletId);
+	resp := ActionResponse{}
+	err := common.PostAndParse(url, NamedDropletCommand{"snapshot", name}, &resp)
+	return resp, err
+}
+func destroyDroplet(dropletId int) (ActionResponse, error) {
+	url := fmt.Sprintf("https://api.digitalocean.com/v2/droplets/%d/actions", dropletId);
+	resp := ActionResponse{}
+	err := common.PostAndParse(url, DropletCommand{"destroy"}, &resp)
+	return resp, err
+}
+

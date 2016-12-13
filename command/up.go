@@ -23,7 +23,7 @@ func CmdUp(c *cli.Context) {
 		return
 	}
 
-	record, err := QuerySnapshots()
+	record, err := querySnapshots()
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -49,12 +49,10 @@ func CmdUp(c *cli.Context) {
 		}
 
 		fmt.Println("Found ", len(matches), " match(es):")
-		if common.Verbose {
-			PrintSnapshots(matches)
-		}
+		PrintSnapshots(matches)
 
 		if len(matches) != 1 {
-			fmt.Println("--latest not supported yet. Please, specify the full name")
+			fmt.Println("--latest not suppoFrted yet. Please, specify the full name")
 			return
 		}
 
@@ -117,11 +115,35 @@ func startDropletFromSnapshot(snapshot Snapshot) {
 		nil,
 		&[]string{"bonito"}}
 
-	startDroplet(body)
+	CmdStartDroplet(body)
 }
 /**
 Select image to meet min size reqquirements. Now it just returns 2gb
  */
 func selectSize(minDiskSize int) string {
 	return "2gb"
+}
+
+func CmdStartDroplet(cmd StartDroplet) {
+
+	if common.Verbose {
+		fmt.Println("Bonito will start the following droplet: ", cmd)
+	}
+	if !common.Force {
+		fmt.Println("Are you sure? Type yes to continue or no to stop")
+		if !common.Confirm() {
+			return
+		}
+		fmt.Println("Proceeding... ")
+	}
+	cmdResp, err := startDroplet(cmd)
+
+	if err != nil {
+		fmt.Println("Error", err)
+		return
+	}
+
+	fmt.Println("Dropet starting....")
+
+	waitUntilStarted(cmdResp.Droplet.Id)
 }
