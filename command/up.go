@@ -7,18 +7,14 @@ import (
 	"github.com/kolov/bonito/common"
 )
 
-var SnapshotTemplate string
-var SnapshotId string
-var UseLatestSnapshot bool
-
 func CmdUp(c *cli.Context) {
-	if SnapshotTemplate == "" && SnapshotId == "" {
-		fmt.Println("Either --template or --snapshot must be provided.")
+	if common.SnapshotTemplate == "" && common.SnapshotId == "" {
+		fmt.Println("Either --template or --snapshotid must be provided.")
 		cli.ShowCommandHelp(c, "up")
 		return
 	}
-	if SnapshotTemplate != "" && SnapshotId != "" {
-		fmt.Println("Only one of --template and --snapshot must be provided.")
+	if common.SnapshotTemplate != "" && common.SnapshotId != "" {
+		fmt.Println("Only one of --template and --snapshotid must be provided.")
 		cli.ShowCommandHelp(c, "up")
 		return
 	}
@@ -29,12 +25,12 @@ func CmdUp(c *cli.Context) {
 		return
 	}
 
-	if SnapshotTemplate != "" {
+	if common.SnapshotTemplate != "" {
 		if common.Verbose {
-			fmt.Println("Loking up snapshots matching template [", SnapshotTemplate, "]")
+			fmt.Println("Loking up snapshots matching template [", common.SnapshotTemplate, "]")
 		}
 
-		var reName = regexp.MustCompile(SnapshotTemplate)
+		var reName = regexp.MustCompile(common.SnapshotTemplate)
 
 		matches := []Snapshot{}
 		for _, snapshot := range record.Snapshots {
@@ -43,33 +39,48 @@ func CmdUp(c *cli.Context) {
 			}
 		}
 		if len(matches) == 0 {
-			fmt.Println("No snapshots found matching [", SnapshotTemplate, "]", "Available snapshots:")
-			PrintSnapshots(record.Snapshots)
+			fmt.Println("No snapshots found matching [", common.SnapshotTemplate, "]", "Available snapshots:")
+			printSnapshots(record.Snapshots)
 			return
 		}
 
 		fmt.Println("Found ", len(matches), " match(es):")
-		PrintSnapshots(matches)
+		printSnapshots(matches)
 
-		if len(matches) != 1 {
-			fmt.Println("--latest not suppoFrted yet. Please, specify the full name")
+		selected := record.Snapshots[0]
+
+		if len(matches) >= 1 {
+			fmt.Println("More than one snapshot matches")
+			if !common.UseLatestSnapshot {
+				fmt.Println("Specify exact name or use --latest")
+				return
+			}
+			fmt.Println("Will use the latest ")
+			for _, snapshot := range matches {
+				if snapshot.CreatedAt.After(selected.CreatedAt) {
+					selected = snapshot
+				}
+			}
+		} else if len(matches) == 0 {
+			fmt.Println("No matching snapshots found")
 			return
 		}
+		fmt.Println("Will start droplet from: ", selected)
 
-		startDropletFromSnapshot(matches[0])
+		startDropletFromSnapshot(selected)
 	}
 
-	if SnapshotId != "" {
+	if common.SnapshotId != "" {
 		matches := []Snapshot{}
 		for _, snapshot := range record.Snapshots {
-			if SnapshotId == snapshot.Id {
+			if common.SnapshotId == snapshot.Id {
 				matches = append(matches, snapshot)
 			}
 		}
 		if len(matches) != 1 {
-			fmt.Print("Expected 1 snapsot with Id ", SnapshotId, ", found " + string(len(matches)))
+			fmt.Print("Expected 1 snapsot with Id ", common.SnapshotId, ", found " + string(len(matches)))
 			fmt.Print("Available snapshots:")
-			PrintSnapshots(record.Snapshots)
+			printSnapshots(record.Snapshots)
 			return
 		}
 		startDropletFromSnapshot(matches[0])
@@ -95,11 +106,19 @@ func startDropletFromSnapshot(snapshot Snapshot) {
 				keyIds = append(keyIds, key.Id)
 			}
 		}
+		if len(keys) == 0 {
+			fmt.Println("ccould not find keys named [", common.Keys, "]")
+			return
+		}
+
 	}
 
 	name := common.DropletName;
 	if name == "" {
 		name = "bonito-" + common.Timeid()
+		if common.Verbose {
+			fmt.Println("No droplet name provided, will use generated:[", name, "]")
+		}
 	}
 
 	body := StartDroplet{

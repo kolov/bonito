@@ -9,15 +9,13 @@ import (
 	"time"
 )
 
-func CmdShutdown(c *cli.Context) {
-	fmt.Println("Shutting down called.")
-
-	if SnapshotTemplate == "" && common.DropletName == "" {
+func CmdShutdown(_ *cli.Context) {
+	if common.SnapshotTemplate == "" && common.DropletName == "" {
 		fmt.Println("Either --template or --name must be provided")
 		return
 	}
 
-	if SnapshotTemplate != "" && common.DropletName != "" {
+	if common.SnapshotTemplate != "" && common.DropletName != "" {
 		fmt.Println("One of --template or --name must be provided")
 		return
 	}
@@ -29,10 +27,10 @@ func CmdShutdown(c *cli.Context) {
 
 	var matchingDroplet Droplet
 
-	if SnapshotTemplate != "" {
-		fmt.Println("Looking for droplets started from image matching [", SnapshotTemplate, "]")
+	if common.SnapshotTemplate != "" {
+		fmt.Println("Looking for droplets started from image matching [", common.SnapshotTemplate, "]")
 
-		var reName = regexp.MustCompile(SnapshotTemplate)
+		var reName = regexp.MustCompile(common.SnapshotTemplate)
 
 		matches := []Droplet{}
 		for _, droplet := range droplets {
@@ -42,7 +40,7 @@ func CmdShutdown(c *cli.Context) {
 		}
 
 		if len(matches) != 1 {
-			fmt.Println("Expected 1 droplet matching image [", SnapshotTemplate, "], found", strconv.Itoa(len(matches)))
+			fmt.Println("Expected 1 droplet matching image [", common.SnapshotTemplate, "], found", strconv.Itoa(len(matches)))
 			return
 		}
 		matchingDroplet = matches[0]
@@ -86,12 +84,13 @@ func shutdown(droplet Droplet) {
 	fmt.Println("Droplet shut down successfully. Starting snapshot")
 	var snapshotBase = droplet.Image.Name
 	actionResp, err1 := snapshotDroplet(droplet.Id, snapshotBase + "1")
-	if err1 != nil  {
+	if err1 != nil {
 		common.PrintError(err1)
 		return
 	}
+	fmt.Println("Waiting for snaphot to finish. THis can take quite a while.")
 	fmt.Println(actionResp)
-	waitSnapshot(droplet.Id, snapshotBase + "1")
+	waitSnapshot(actionResp.Action.Id)
 	fmt.Println("Snapshot taken successfully. Starting delete")
 	destroyDroplet(droplet.Id)
 
@@ -124,23 +123,22 @@ func waitShutdown(id int) {
 
 }
 
-func waitSnapshot(id int, snapshotname string) {
+func waitSnapshot(actionId int) {
 	ticker := time.NewTicker(20 * time.Second)
 	quit := make(chan struct{})
 
 	for {
 		select {
 		case <-ticker.C:
-
-			snapshots, err := querySnapshots()
-
-			if err == nil {
+			aresp, err := queryAction(actionId)
+			if err != nil {
 				common.PrintError(err)
 			} else {
-				fmt.Println("Waiting...", snapshots)
+				if aresp.Action.CompletedAt != "" {
+					close(quit)
+				}
+				fmt.Sprint("Action %s not completed yet. Waiting...", actionId)
 			}
-
-
 		case <-quit:
 			ticker.Stop()
 			return

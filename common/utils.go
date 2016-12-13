@@ -102,10 +102,7 @@ func PostAndParse(url string, body interface{}, result interface{}) error {
 		fmt.Println(string(b))
 		return errors.New(fmt.Sprintf("%s: %s", resp.Status, b))
 	}
-
-	fmt.Println("ABout to decode resp.Body into ", result)
 	err = json.NewDecoder(resp.Body).Decode(result)
-	fmt.Println("Decoded resp.Body into ", result)
 	return err
 
 }

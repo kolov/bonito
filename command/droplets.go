@@ -81,8 +81,7 @@ type ActionResponse struct {
 		       CompletedAt  string `json:"completed_at"`
 		       ResourceId   int      `json:"resource_id"`
 		       ResourceType string      `json:"resource_type"`
-		       Region       string   `json:"region"`
-		       RegionSlug   string   `json:"region_slug"`
+		       // "region":{"name":"Frankfurt 1","slug":"fra1","sizes":["512mb","1gb","2gb","4gb","8gb","16gb","m-16gb","32gb","m-32gb","48gb","m-64gb","64gb","m-128gb","m-224gb"],"features":["private_networking","backups","ipv6","metadata","install_agent","storage"],"available":true},"region_slug":"fra1"}}
 	       }  `json:"action"`
 }
 

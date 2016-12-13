@@ -7,6 +7,7 @@ import (
 	"github.com/kolov/bonito/common"
 	"time"
 	"strconv"
+	"encoding/json"
 )
 
 type Snapshot struct {
@@ -20,6 +21,11 @@ type Snapshot struct {
 
 	MinDISKSize   int      `json:"min_disk_size"`
 	SizeGigabytes float32      `json:"size_gigabytes"`
+}
+
+func (s Snapshot)String() string {
+	barr, _ := json.Marshal(s)
+	return string(barr)
 }
 
 type SnapshotList struct {
@@ -42,21 +48,21 @@ func CmdListSnapshots(_ *cli.Context) {
 		return
 	}
 	if len(record.Snapshots) != 0 {
-		PrintSnapshots(record.Snapshots)
+		printSnapshots(record.Snapshots)
 	} else {
 		fmt.Println("No snapshots")
 	}
 
 }
 
-func PrintSnapshots(snapshots []Snapshot) {
+func printSnapshots(snapshots []Snapshot) {
 	for i, v := range snapshots {
 		fmt.Println(i + 1, toString(v))
 	}
 }
 func toString(v Snapshot) string {
 	return strings.Join(
-		[]string{" [", v.Name, "] created at [",
+		[]string{" [", v.Name, ", id=", v.Id, "] created at [",
 			v.CreatedAt.Format("2/1/2006 15:04"),
 			"], regions=[", strings.Join(v.Regions, ","),
 			"], mindisk=[", strconv.Itoa(v.MinDISKSize), "]"}, "")

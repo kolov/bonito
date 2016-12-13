@@ -54,10 +54,10 @@ var Commands = []cli.Command{
 			cli.StringFlag{Name: "template , t ",
 				Usage:  "regex or fullname of the snapshot used to start the droplet. More matches " +
 					"NOT allowed",
-				Destination: &command.SnapshotTemplate},
+				Destination: &common.SnapshotTemplate},
 			cli.StringFlag{Name: "snapshotid , sid ",
 				Usage:  "id of the snapshot to use. Exact match expected",
-				Destination: &command.SnapshotId},
+				Destination: &common.SnapshotId},
 			cli.BoolFlag{
 				Name:   "verbose, v",
 				Usage:  "Verbose output",
@@ -82,14 +82,14 @@ var Commands = []cli.Command{
 		Action: command.CmdUp,
 		Flags: []cli.Flag{
 			cli.StringFlag{Name: "template , t ",
-				Usage:  "regex or fullname of the snapshot to use. More matches allowed, see --latest",
-				Destination: &command.SnapshotTemplate},
+				Usage:  "regex or fullname of the snapshot to use. More matches possible, see --latest",
+				Destination: &common.SnapshotTemplate},
 			cli.StringFlag{Name: "snapshotid , sid ",
 				Usage:  "id of the snapshot to use. Exact match expected",
-				Destination: &command.SnapshotId},
+				Destination: &common.SnapshotId},
 			cli.BoolFlag{Name: "latest",
 				Usage:  "Use the latest snapshot by more matches. ",
-				Destination: &command.UseLatestSnapshot},
+				Destination: &common.UseLatestSnapshot},
 			cli.BoolFlag{
 				Name:   "verbose, v",
 				Usage:  "Verbose output",

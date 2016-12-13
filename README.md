@@ -46,7 +46,7 @@ To start a server from an existing snapshot:
     
 To shut it down:
 
-    bonito shutdown --template {regex} OR --name {name} [--verbose] --nosnapshot
+    bonito shutdown --name mydroplet [--verbose] --nosnapshot
       
 ## Install
 
