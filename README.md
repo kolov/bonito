@@ -68,7 +68,7 @@ Besides:
 To install, use `go get`:
 
 ```bash
-$ go get -d github.com/kolov/sardine
+$ go get -d github.com/kolov/bonito
 ```
 
 ## Contribution
