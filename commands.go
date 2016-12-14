@@ -91,7 +91,7 @@ var Commands = []cli.Command{
 			cli.StringFlag{
 				Name:   "keys",
 				Value: "",
-				Usage:  "SSH key name(s) to initialize the droplet with",
+				Usage:  "SSH key name(s) to initialize the droplet with. ALWAYS provide them",
 				Destination: &common.Keys,
 			},
 			cli.StringFlag{

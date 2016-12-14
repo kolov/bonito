@@ -15,7 +15,7 @@ Besides, I wanted to do something in Go.
 
 ## Usage
 
-DON'T USE, this is in development.
+BE CAREFUL, this is in development. Unless --force is specified, all destructive actions ask for confirmation. 
 
 Start with `bonito --help`
 
@@ -44,15 +44,20 @@ First, you need a Digital Ocean authorization token. See
 Put the token in environment variable DO_TOKEN_BONITO (`export DO_TOKEN_BONITO=A7f9...`) or provide in the command line
 with the option --token (`bonito --token A7f9... ...`).
 
+Each command has its own help, e.g.:
+
+    rife:bonito assen$ ./bonito up --help
+
 To start a server from an existing snapshot:
 
-    bonito up --template {regex} [--latest] [--name mydroplet] [--verbose] -keys mykeyname
+    bonito up --snapshot jenkins [--latest] --name jenkins [--verbose] -keys assen
  
-    [bonito] created from image [wip] statuse=[active] ip=188.166.5.244
+    ... work ...
+    [bonito] created from image [jenkins-2016-12-12-12:33] statuse=[active] ip=188.166.5.244
     
 To shut it down:
 
-    bonito letgo --name mydroplet [--verbose] --nosnapshot --force
+    bonito letgo --name jenkins --nosnapshot --force
     
 Besides:
  
