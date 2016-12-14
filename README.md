@@ -4,18 +4,19 @@
 
 Bonito lives in the Digital Ocean. Some services on DO may be needed temporarily, e.g. during working hours, 
 and not in the weekend or overnight. 
-Bonito helps you to shutdown a droplet, snapshot the data and release it,
-paying no cloud costs until you need them again. Start a new, possibly bigger droplet from the snapshotnext day.
+Bonito helps you to shutdown a droplet, snapshot the data and destoy it,
+paying no cloud costs until the next droplet is started rom the last snapshot.   
 
 All this can be done on the digital Oceans' Dashboard, 
 with a few clicks and a lot of patience - the worse is waiting up to 15 minutes for a snapshot to be taken,
-then delete the droplet. It's easy to loose patience and forget do perform the key action - destorying the droplet.
-Bonito waits untill the snapshot is ready and not loose patience.
-Besides, I wanted to do something in Go.
+before deletin the droplet. It's easy to loose patience and forget to destory the droplet at the end.
+Bonito waits untill as long as needed and does not loose patience.
+Besides, I was cusious to do something in Go.
 
 ## Usage
 
-BE CAREFUL, this is in development. Unless --force is specified, all destructive actions ask for confirmation. 
+BE CAREFUL, this is in development. Unless --force is specified, all destructive actions ask for confirmation. I use 
+it myself for a couple of days now. 
 
 Start with `bonito --help`
 
