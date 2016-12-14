@@ -11,4 +11,5 @@ var SnapshotTemplate string
 var Force bool
 var UseLatestSnapshot bool
 var Verbose bool
+var Silent bool
 var NoSnapshot bool

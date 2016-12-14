@@ -37,6 +37,7 @@ func CmdShutdown(_ *cli.Context) {
 	if common.Verbose {
 		fmt.Println("Will shutdown ", matches[0])
 	}
+
 	letgo(matches[0])
 }
 
@@ -129,7 +130,8 @@ func waitSnapshot(actionId int) {
 				if aresp.Action.CompletedAt != "" {
 					close(quit)
 				}
-				fmt.Printf("Action %s not completed in %d sec. Waiting...\n", actionId, time.Now().Unix() - start)
+				fmt.Printf("Action %d not completed in %d sec. Waiting...\n",
+					actionId, time.Now().Unix() - start)
 			}
 		case <-quit:
 			ticker.Stop()

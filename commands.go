@@ -48,7 +48,7 @@ var Commands = []cli.Command{
 	},
 	{
 		Name:   "letgo",
-		Usage:  "Let a froplet go -shutdown, snapshot and destroy",
+		Usage:  "Let a droplet go -shutdown, snapshot and destroy",
 		Action: command.CmdShutdown,
 		Flags:  []cli.Flag{
 			cli.StringFlag{

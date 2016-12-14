@@ -20,8 +20,8 @@ func CmdUp(c *cli.Context) {
 		return
 	}
 
-	if common.Verbose {
-		fmt.Println("Loking up snapshots matching template [", common.SnapshotTemplate, "]")
+	if !common.Silent {
+		fmt.Printf("Loking up snapshots matching template [%s]", common.SnapshotTemplate)
 	}
 
 	var reName = regexp.MustCompile(common.SnapshotTemplate)
@@ -38,7 +38,7 @@ func CmdUp(c *cli.Context) {
 		return
 	}
 
-	selected := record.Snapshots[0]
+	selected := matches[0]
 
 	if len(matches) > 1 {
 		fmt.Printf("%d snapshot(s) match the given snapshot name [%s]:\n", len(matches), common.SnapshotTemplate)
@@ -55,7 +55,6 @@ func CmdUp(c *cli.Context) {
 			}
 		}
 	}
-
 
 	startDropletFromSnapshot(selected)
 
