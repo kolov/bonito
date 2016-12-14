@@ -6,7 +6,6 @@ import (
 	"strings"
 	"github.com/kolov/bonito/common"
 	"time"
-	"strconv"
 	"encoding/json"
 )
 
@@ -32,8 +31,14 @@ type SnapshotList struct {
 	Snapshots [] Snapshot   `json:"snapshots"`
 }
 
-func querySnapshots() (SnapshotList, error) {
+func queryAllSnapshots() (SnapshotList, error) {
 	url := fmt.Sprintf("https://api.digitalocean.com/v2/snapshots?page=1&per_page=100")
+	var record SnapshotList
+	err := common.Query(url, &record)
+	return record, err
+}
+func queryDropletSnapshots(dropletId int) (SnapshotList, error) {
+	url := fmt.Sprintf("https://api.digitalocean.com/v2/droplets/$d/snapshots", dropletId)
 	var record SnapshotList
 	err := common.Query(url, &record)
 	return record, err
@@ -41,7 +46,7 @@ func querySnapshots() (SnapshotList, error) {
 
 func CmdListSnapshots(_ *cli.Context) {
 
-	record, err := querySnapshots()
+	record, err := queryAllSnapshots()
 
 	if err != nil {
 		fmt.Println(err)
@@ -61,9 +66,9 @@ func printSnapshots(snapshots []Snapshot) {
 	}
 }
 func toString(v Snapshot) string {
-	return strings.Join(
-		[]string{" [", v.Name, ", id=", v.Id, "] created at [",
-			v.CreatedAt.Format("2/1/2006 15:04"),
-			"], regions=[", strings.Join(v.Regions, ","),
-			"], mindisk=[", strconv.Itoa(v.MinDISKSize), "]"}, "")
+	return fmt.Sprintf("[%s, id=%s] created at [%s], regions=[%s], mindisk=[%d]",
+		v.Name, v.Id,
+		v.CreatedAt.Format("2/1/2006 15:04"),
+		strings.Join(v.Regions, ","),
+		v.MinDISKSize)
 }

@@ -6,8 +6,14 @@ import (
 	"github.com/kolov/bonito/common"
 	"encoding/json"
 	"time"
-	"net/http"
 )
+
+type Network struct {
+	IpAddress string    `json:"ip_address"`
+	Netmask   string    `json:"netmask"`
+	Gateway   string    `json:"gateway"`
+	Type      string    `json:"type"`
+}
 
 type Droplet struct {
 	Id           int    `json:"id"`
@@ -21,7 +27,8 @@ type Droplet struct {
 			     Name    string `json:"name"`
 			     Version string `json:"version"`
 		     } `json:"kernel"`
-	created_at   string `json:"created_at"`
+	CreatedAt    string `json:"created_at"`
+
 	Backup_ids   []int  `json:"backup_ids"`
 	Snapshot_ids []int  `json:"snapshot_ids"`
 	Image        struct {
@@ -36,6 +43,11 @@ type Droplet struct {
 			     Itype          string   `json:"type"`
 			     Size_gigabytes float32  `json:"size_gigabytes"`
 		     } `json:"image"`
+	Networks     struct {
+			     V4 []Network `json:"v4"`
+			     V6 []Network `json:"v6"`
+		     } `json:"networks"`
+	Features     []string `json:"features"`
 }
 
 func (d Droplet)String() string {
@@ -137,8 +149,8 @@ func CmdListDroplets(_ *cli.Context) {
 func printDroplets(droplets []Droplet) {
 	if len(droplets) != 0 {
 		for i, v := range droplets {
-			fmt.Printf("%d. [%s] created from image [%s] statuse=[%s] id=%d\n",
-				i + 1, v.Name, v.Image.Name, v.Status, v.Id)
+			fmt.Printf("%d. [%s] created from image [%s] statuse=[%s] ip=%s\n",
+				i + 1, v.Name, v.Image.Name, v.Status, v.Networks.V4[0].IpAddress)
 		}
 	} else {
 		fmt.Println("No active droplets")
@@ -160,7 +172,9 @@ func waitUntilStarted(id int) {
 				fmt.Printf("Droplet [id=%d, name= %s] has status [%s]\n",
 					droplet.Id, droplet.Name, droplet.Status)
 				if droplet.Status == "active" {
-					fmt.Println("Droplet started successfully")
+					fmt.Println("Droplet started successfully:")
+					fmt.Printf("[%s] created from image [%s] statuse=[%s] ip=%s\n",
+						droplet.Name, droplet.Image.Name, droplet.Status, droplet.Networks.V4[0].IpAddress)
 					close(quit)
 				}
 			}
@@ -179,9 +193,15 @@ func startDroplet(body StartDroplet) (DropletsResponse, error) {
 	return dropletResponse, err
 
 }
-func shutdownDroplet(dropletId int) (*http.Response, error) {
+
+func executeDropletCommand(dropletId int, command DropletCommand) (ActionResponse, error) {
 	url := fmt.Sprintf("https://api.digitalocean.com/v2/droplets/%d/actions", dropletId);
-	return common.Post(url, DropletCommand{"shutdown"})
+	resp := ActionResponse{}
+	err := common.PostAndParse(url, command, &resp)
+	return resp, err
+}
+func shutdownDroplet(dropletId int) (ActionResponse, error) {
+	return executeDropletCommand(dropletId, DropletCommand{"shutdown"})
 }
 
 func snapshotDroplet(dropletId int, name string) (ActionResponse, error) {
@@ -190,10 +210,8 @@ func snapshotDroplet(dropletId int, name string) (ActionResponse, error) {
 	err := common.PostAndParse(url, NamedDropletCommand{"snapshot", name}, &resp)
 	return resp, err
 }
+
 func destroyDroplet(dropletId int) (ActionResponse, error) {
-	url := fmt.Sprintf("https://api.digitalocean.com/v2/droplets/%d/actions", dropletId);
-	resp := ActionResponse{}
-	err := common.PostAndParse(url, DropletCommand{"destroy"}, &resp)
-	return resp, err
+	return executeDropletCommand(dropletId, DropletCommand{"destroy"})
 }
 

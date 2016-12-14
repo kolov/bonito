@@ -47,27 +47,25 @@ var Commands = []cli.Command{
 		},
 	},
 	{
-		Name:   "shutdown",
-		Usage:  "Stops, archives and deletes a droplet",
+		Name:   "letgo",
+		Usage:  "Let a froplet go -shutdown, snapshot and destroy",
 		Action: command.CmdShutdown,
 		Flags:  []cli.Flag{
-			cli.StringFlag{Name: "template , t ",
-				Usage:  "regex or fullname of the snapshot used to start the droplet. More matches " +
-					"NOT allowed",
-				Destination: &common.SnapshotTemplate},
-			cli.StringFlag{Name: "snapshotid , sid ",
-				Usage:  "id of the snapshot to use. Exact match expected",
-				Destination: &common.SnapshotId},
-			cli.BoolFlag{
-				Name:   "verbose, v",
-				Usage:  "Verbose output",
-				Destination: &common.Verbose,
-			},
 			cli.StringFlag{
 				Name:   "name",
 				Value: "",
 				Usage:  "Droplet name",
 				Destination: &common.DropletName,
+			},
+			cli.BoolFlag{
+				Name:   "nosnapshot",
+				Usage:  "Destroy without taking a snapshot",
+				Destination: &common.NoSnapshot,
+			},
+			cli.BoolFlag{
+				Name:   "verbose, v",
+				Usage:  "Verbose output",
+				Destination: &common.Verbose,
 			},
 			cli.BoolFlag{
 				Name:   "force, f",
@@ -81,20 +79,15 @@ var Commands = []cli.Command{
 		Usage:  "starts a droplet from a snapshot",
 		Action: command.CmdUp,
 		Flags: []cli.Flag{
-			cli.StringFlag{Name: "template , t ",
-				Usage:  "regex or fullname of the snapshot to use. More matches possible, see --latest",
+			cli.StringFlag{Name: "snapshot , s ",
+				Usage:  "regex or name of the snapshot to use. More matches possible, see --latest",
 				Destination: &common.SnapshotTemplate},
-			cli.StringFlag{Name: "snapshotid , sid ",
-				Usage:  "id of the snapshot to use. Exact match expected",
-				Destination: &common.SnapshotId},
+			cli.StringFlag{Name: "name ",
+				Usage:  "Name of the droplet to create. If not provided, will use bonito-{timesttmp}",
+				Destination: &common.DropletName},
 			cli.BoolFlag{Name: "latest",
-				Usage:  "Use the latest snapshot by more matches. ",
+				Usage:  "Use the latest snapshot by more matches. If not set, wil stop by more matches",
 				Destination: &common.UseLatestSnapshot},
-			cli.BoolFlag{
-				Name:   "verbose, v",
-				Usage:  "Verbose output",
-				Destination: &common.Verbose,
-			},
 			cli.StringFlag{
 				Name:   "keys",
 				Value: "",
@@ -102,11 +95,17 @@ var Commands = []cli.Command{
 				Destination: &common.Keys,
 			},
 			cli.StringFlag{
-				Name:   "name",
+				Name:   "size",
 				Value: "",
-				Usage:  "Droplet name",
-				Destination: &common.DropletName,
+				Usage:  "size of the droplet to create. Defaukt is 2gb. Posslible values: 2gb, 4gb, 8gb, 16gb, m-16gb, 32gb, m-32gb, 48gb, m-64gb, 64gb, m-128gb, m-224gb",
+				Destination: &common.DropletSize,
 			},
+			cli.BoolFlag{
+				Name:   "verbose, v",
+				Usage:  "Verbose output",
+				Destination: &common.Verbose,
+			},
+
 			cli.BoolFlag{
 				Name:   "force, f",
 				Usage:  "Don't ask confirmation",
