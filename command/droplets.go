@@ -149,8 +149,15 @@ func CmdListDroplets(_ *cli.Context) {
 func printDroplets(droplets []Droplet) {
 	if len(droplets) != 0 {
 		for i, v := range droplets {
-			fmt.Printf("%d. [%s] created from image [%s] statuse=[%s] ip=%s\n",
-				i + 1, v.Name, v.Image.Name, v.Status, v.Networks.V4[0].IpAddress)
+			fmt.Printf("%d. [%s] created from image [%s] statuse=[%s] ip=",
+				i + 1, v.Name, v.Image.Name, v.Status)
+			for j, net := range v.Networks.V4 {
+				fmt.Printf("%s", net.IpAddress)
+				if j < len(v.Networks.V4) - 1 {
+					fmt.Print(", ")
+				}
+			}
+			fmt.Println()
 		}
 	} else {
 		fmt.Println("No active droplets")
