@@ -14,7 +14,7 @@ func CmdKill(c *cli.Context) {
 
 func CmdLetgo(_ *cli.Context) {
 	if common.DropletName == "" {
-		fmt.Println("--name must be provided")
+		fmt.Println("--droplet must be provided")
 		return
 	}
 

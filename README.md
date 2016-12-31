@@ -58,7 +58,7 @@ To start a server from an existing snapshot:
     
 To shut it down:
 
-    bonito letgo --name jenkins --nosnapshot --force
+    bonito letgo --droplet jenkins --nosnapshot --force
     
 Besides:
  

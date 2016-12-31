@@ -126,7 +126,8 @@ var Commands = []cli.Command{
 			cli.StringFlag{
 				Name:   "size",
 				Value: "",
-				Usage:  "size of the droplet to create. Defaukt is 2gb. Posslible values: 2gb, 4gb, 8gb, 16gb, m-16gb, 32gb, m-32gb, 48gb, m-64gb, 64gb, m-128gb, m-224gb",
+				Usage:  "size of the droplet to create. Default is 2gb. Posslible values: 2gb, 4gb, " +
+					"8gb, 16gb, m-16gb, 32gb, m-32gb, 48gb, m-64gb, 64gb, m-128gb, m-224gb",
 				Destination: &common.DropletSize,
 			},
 			cli.BoolFlag{
