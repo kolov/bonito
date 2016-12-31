@@ -7,7 +7,12 @@ import (
 	"time"
 )
 
-func CmdShutdown(_ *cli.Context) {
+func CmdKill(c *cli.Context) {
+	common.NoSnapshot = true
+	CmdLetgo(c)
+}
+
+func CmdLetgo(_ *cli.Context) {
 	if common.DropletName == "" {
 		fmt.Println("--name must be provided")
 		return
@@ -34,7 +39,7 @@ func CmdShutdown(_ *cli.Context) {
 		return
 	}
 
-	if common.Verbose {
+	if !common.Silent {
 		fmt.Println("Will shutdown ", matches[0])
 	}
 
@@ -53,6 +58,14 @@ func letgo(droplet Droplet) {
 		}
 
 	}
+
+	snapshotName := common.SnapshotName
+	if snapshotName == "" {
+		snapshotName = nextSnapshotName(droplet)
+		if !common.Silent {
+			fmt.Println("No snapshot name was provide. Wil use [", snapshotName, "]")
+		}
+	}
 	if !common.NoSnapshot {
 		_, err := shutdownDroplet(droplet.Id)
 		if err != nil {
@@ -62,14 +75,14 @@ func letgo(droplet Droplet) {
 		fmt.Println("Shutdown in progress. Waiting for droplet to shutdown...")
 		waitShutdown(droplet.Id)
 		fmt.Println("Droplet shut down successfully. Requesting snapshot...")
-		snapshotName := nextSnapshotName(droplet)
+
 		actionResp, err1 := snapshotDroplet(droplet.Id, snapshotName)
 		if err1 != nil {
 			common.PrintError(err1)
 			return
 		}
 		fmt.Println("Snapshot requested. This can take quite a while.")
-		if common.Verbose {
+		if !common.Silent {
 			fmt.Println("Snapshot action response", actionResp)
 		}
 		waitSnapshot(actionResp.Action.Id)

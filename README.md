@@ -51,7 +51,7 @@ Each command has its own help, e.g.:
 
 To start a server from an existing snapshot:
 
-    bonito up --snapshot jenkins [--latest] --name jenkins [--verbose] -keys assen
+    bonito up --snapshot jenkins [--latest] --name jenkins [--quiet] -keys assen
  
     ... work ...
     [bonito] created from image [jenkins-2016-12-12-12:33] statuse=[active] ip=188.166.5.244

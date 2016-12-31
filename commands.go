@@ -49,7 +49,41 @@ var Commands = []cli.Command{
 	{
 		Name:   "letgo",
 		Usage:  "Let a droplet go -shutdown, snapshot and destroy",
-		Action: command.CmdShutdown,
+		Action: command.CmdLetgo,
+		Flags:  []cli.Flag{
+			cli.StringFlag{
+				Name:   "droplet, d",
+				Value: "",
+				Usage:  "Droplet name",
+				Destination: &common.DropletName,
+			},
+			cli.StringFlag{
+				Name:   "snapshot, s",
+				Value: "",
+				Usage:  "Name of the snapshot to create. Will generate one, if not provided",
+				Destination: &common.SnapshotName,
+			},
+			cli.BoolFlag{
+				Name:   "nosnapshot",
+				Usage:  "Destroy without taking a snapshot",
+				Destination: &common.NoSnapshot,
+			},
+			cli.BoolFlag{
+				Name:   "quiet, q",
+				Usage:  "Quiet output",
+				Destination: &common.Silent,
+			},
+			cli.BoolFlag{
+				Name:   "force, f",
+				Usage:  "Don't ask confirmation",
+				Destination: &common.Force,
+			},
+		},
+	},
+	{
+		Name:   "kill",
+		Usage:  "Same as 'letgo --nosnapshot",
+		Action: command.CmdKill,
 		Flags:  []cli.Flag{
 			cli.StringFlag{
 				Name:   "name",
@@ -58,14 +92,9 @@ var Commands = []cli.Command{
 				Destination: &common.DropletName,
 			},
 			cli.BoolFlag{
-				Name:   "nosnapshot",
-				Usage:  "Destroy without taking a snapshot",
-				Destination: &common.NoSnapshot,
-			},
-			cli.BoolFlag{
-				Name:   "verbose, v",
-				Usage:  "Verbose output",
-				Destination: &common.Verbose,
+				Name:   "quiet, q",
+				Usage:  "Quiet output",
+				Destination: &common.Silent,
 			},
 			cli.BoolFlag{
 				Name:   "force, f",
@@ -101,9 +130,9 @@ var Commands = []cli.Command{
 				Destination: &common.DropletSize,
 			},
 			cli.BoolFlag{
-				Name:   "verbose, v",
-				Usage:  "Verbose output",
-				Destination: &common.Verbose,
+				Name:   "quiet, q",
+				Usage:  "Quiet output",
+				Destination: &common.Silent,
 			},
 
 			cli.BoolFlag{

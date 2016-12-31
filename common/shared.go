@@ -6,10 +6,10 @@ var ListOrder string
 var Keys string
 var DropletSize string
 var DropletName string
+var SnapshotName string
 var SnapshotTemplate string
 
 var Force bool
 var UseLatestSnapshot bool
-var Verbose bool
 var Silent bool
 var NoSnapshot bool
