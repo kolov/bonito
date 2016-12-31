@@ -122,7 +122,7 @@ func generateName(snapshotName string) string {
 	if ix != -1 {
 		baseName = snapshotName[0:ix]
 	}
-	return baseName + common.Timeid()
+	return baseName + "-" + common.Timeid()
 
 }
 /**
