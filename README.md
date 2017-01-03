@@ -19,6 +19,7 @@ BE CAREFUL, this is in development. Unless --force is specified, all destructive
 it myself for a couple of weeks now. 
 
 Start with `bonito --help`
+
     USAGE:
        bonito [global options] command [command options] [arguments...]
 
